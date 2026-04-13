@@ -10,7 +10,21 @@
 <body>
     <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0f; z-index:9999; display:flex; align-items:center; justify-content:center;"><div class="spinner"></div></div>
     <div id="appContent" style="display:none;">
-        <nav class="navbar"><div class="nav-container"><div class="logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div><div class="nav-links"><a href="#" onclick="loadDashboard()">Dashboard</a><a href="#" onclick="loadUserApprovals()">User Approvals</a><a href="#" onclick="loadOrders()">Orders</a><a href="#" onclick="loadProductsAdmin()">Products</a><a href="#" onclick="loadWithdrawals()">Withdrawals</a><a href="#" onclick="loadCommissionSettings()">Commission</a><a href="#" onclick="logout()">Logout</a></div><div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div></div></nav>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div>
+                <div class="nav-links">
+                    <a href="#" onclick="loadDashboard()">Dashboard</a>
+                    <a href="#" onclick="loadUserApprovals()">User Approvals</a>
+                    <a href="#" onclick="loadOrders()">Orders</a>
+                    <a href="#" onclick="loadProductsAdmin()">Products</a>
+                    <a href="#" onclick="loadWithdrawals()">Withdrawals</a>
+                    <a href="#" onclick="loadCommissionSettings()">Commission</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+                <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+            </div>
+        </nav>
         <div class="mobile-menu" id="mobileMenu"></div>
         <main><div id="adminContent" class="admin-container"><div class="spinner"></div></div></main>
     </div>
@@ -19,14 +33,40 @@
     <script type="module">
         import { checkSession, logout } from './supabase.js';
         window.logout = logout;
+
         (async function() {
-            const adminAuth = localStorage.getItem('admin_authenticated');
-            if (!adminAuth) { window.location.href = 'admin-login.html'; return; }
-            const user = await checkSession();
-            if (!user || user.role !== 'admin') { window.location.href = 'admin-login.html'; return; }
-            document.getElementById('loadingOverlay').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-            loadDashboard();
+            try {
+                // 1. অ্যাডমিন লোকাল স্টোরেজ চেক
+                const adminAuth = localStorage.getItem('admin_authenticated');
+                if (!adminAuth) {
+                    window.location.href = 'admin-login.html';
+                    return;
+                }
+
+                // 2. Supabase সেশন চেক
+                const user = await checkSession();
+                if (!user || user.role !== 'admin') {
+                    localStorage.removeItem('admin_authenticated');
+                    window.location.href = 'admin-login.html';
+                    return;
+                }
+
+                // 3. লোডিং সরান
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+
+                // 4. ড্যাশবোর্ড লোড করুন (ফাংশন script.js থেকে আসবে)
+                if (typeof loadDashboard === 'function') {
+                    await loadDashboard();
+                } else {
+                    console.error('loadDashboard function not found');
+                    document.getElementById('adminContent').innerHTML = '<div class="glass-card p-6"><p class="text-red-400">Dashboard function missing. Please refresh or contact support.</p></div>';
+                }
+            } catch (err) {
+                console.error('Admin init error:', err);
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('adminContent').innerHTML = '<div class="glass-card p-6"><p class="text-red-400">Failed to load admin panel. Check console.</p></div>';
+            }
         })();
     </script>
 </body>
