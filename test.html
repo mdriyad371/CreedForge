@@ -1,26 +1,91 @@
 <!DOCTYPE html>
-<html>
-<head><title>Supabase Connection Test</title></head>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body { font-family: monospace; background: #0a0a0f; color: #0f0; padding: 2rem; }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        .info { color: #ff0; }
+        pre { background: #111; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    </style>
+</head>
 <body>
-<h1>Supabase Test</h1>
-<pre id="output">Checking...</pre>
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-  
-  // বিল্ড টাইমে প্রতিস্থাপিত হওয়ার কথা
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  
-  const out = document.getElementById('output');
-  if (!supabaseUrl || !supabaseKey) {
-    out.innerText = '❌ Environment variables are missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel.';
-  } else {
-    out.innerText = `URL: ${supabaseUrl}\nKey: ${supabaseKey.substring(0, 20)}...\n\nTesting connection...`;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data, error } = await supabase.from('users').select('count', { count: 'exact', head: true });
-    if (error) out.innerText += `\n❌ Error: ${error.message}`;
-    else out.innerText += `\n✅ Connected! Users table exists.`;
-  }
-</script>
+    <h1>🔌 Supabase Connection Test</h1>
+    <div id="output">Running tests...</div>
+    <script type="module">
+        import { supabase } from './supabase.js';
+        const output = document.getElementById('output');
+        async function runTests() {
+            let html = '<hr>';
+
+            // 1. Check if supabase object exists
+            html += '<p>📡 Checking supabase object...</p>';
+            if (supabase) {
+                html += '<p class="pass">✅ supabase object loaded successfully.</p>';
+            } else {
+                html += '<p class="fail">❌ supabase object not found. Check supabase.js import.</p>';
+                output.innerHTML = html;
+                return;
+            }
+
+            // 2. Test simple query on 'users' table
+            html += '<p>📊 Testing query on "users" table...</p>';
+            try {
+                const { data, error, count } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+                if (error) {
+                    html += `<p class="fail">❌ Error querying users table: ${error.message}</p>`;
+                } else {
+                    html += `<p class="pass">✅ "users" table accessible. Total rows: ${count}</p>`;
+                }
+            } catch (err) {
+                html += `<p class="fail">❌ Exception: ${err.message}</p>`;
+            }
+
+            // 3. Check authentication status
+            html += '<p>🔐 Checking authentication status...</p>';
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                html += `<p class="pass">✅ Logged in as: ${user.email}</p>`;
+                // Fetch role from public.users
+                const { data: profile } = await supabase
+                    .from('users')
+                    .select('role, approval_status')
+                    .eq('email', user.email)
+                    .single();
+                if (profile) {
+                    html += `<p class="pass">✅ Role: ${profile.role}, Status: ${profile.approval_status}</p>`;
+                } else {
+                    html += `<p class="fail">⚠️ User not found in public.users table.</p>`;
+                }
+            } else {
+                html += `<p class="info">ℹ️ No user logged in. Try logging in via login.html or admin-login.html first.</p>`;
+            }
+
+            // 4. Test realtime subscription (optional)
+            html += '<p>🔄 Testing realtime subscription (listening for changes on "notices")...</p>';
+            const channel = supabase.channel('test-channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'notices' }, (payload) => {
+                    console.log('Realtime event:', payload);
+                    html += `<p class="info">📢 Realtime event received! (check console)</p>`;
+                })
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        html += `<p class="pass">✅ Realtime subscription active.</p>`;
+                        output.innerHTML = html;
+                    } else {
+                        html += `<p class="fail">❌ Realtime subscription failed: ${status}</p>`;
+                        output.innerHTML = html;
+                    }
+                });
+
+            output.innerHTML = html;
+        }
+        runTests();
+    </script>
 </body>
-</html>
+  </html>
