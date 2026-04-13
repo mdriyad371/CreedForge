@@ -1,4 +1,4 @@
-// script.js - Creed Forge সম্পূর্ণ লজিক
+// script.js - Creed Forge সম্পূর্ণ লজিক (export সংস্করণ)
 import { supabase, checkSession, requireAuth, logout } from './supabase.js';
 
 window.checkSession = checkSession;
@@ -46,7 +46,7 @@ function showToast(msg, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// ==================== রেজিস্ট্রেশন ও লগইন (HTML ফর্মের সাথে সংযুক্ত) ====================
+// ==================== রেজিস্ট্রেশন ও লগইন ====================
 document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('regEmail').value.trim();
@@ -305,7 +305,7 @@ async function loadProductsAdmin() { await loadProducts(); }
 async function loadWithdrawals() { await loadDashboard(); }
 async function loadCommissionSettings() { await loadDashboard(); }
 
-// ==================== অ্যাকশন ফাংশন (onclick ইভেন্টের জন্য) ====================
+// ==================== অ্যাকশন ফাংশন ====================
 window.generateShareLink = (productId) => {
     const shareUrl = `${window.location.origin}/client-order.html?ref=${currentUser.referral_code}&product=${productId}`;
     navigator.clipboard.writeText(shareUrl);
@@ -397,7 +397,17 @@ export async function loadClientOrderForm(refCode, productId) {
     });
 }
 
-// ==================== গ্লোবালি ফাংশন এক্সপোজ করুন (HTML-এর onclick এর জন্য) ====================
+// ==================== এক্সপোর্ট (অ্যাডমিন পেজের জন্য) ====================
+export {
+    loadDashboard,
+    loadUserApprovals,
+    loadOrders,
+    loadProductsAdmin,
+    loadWithdrawals,
+    loadCommissionSettings
+};
+
+// গ্লোবালি এক্সপোজ (অন্যান্য HTML এর জন্য)
 window.loadVolunteerDashboard = loadVolunteerDashboard;
 window.loadProducts = loadProducts;
 window.loadVolunteerOrders = loadVolunteerOrders;
