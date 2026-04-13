@@ -6,31 +6,65 @@
     <title>Admin Login - Creed Forge</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .error-msg { color: #ff4d6d; margin-top: 1rem; font-size: 0.85rem; }
+    </style>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div>
             <h2>Admin Access</h2>
-            <p>Enter admin password</p>
+            <p>Login with your admin credentials</p>
             <form id="adminLoginForm">
-                <input type="password" id="adminPassword" placeholder="Admin Password" required>
+                <input type="email" id="adminEmail" placeholder="admin@creedforge.com" required autofocus>
+                <input type="password" id="adminPassword" placeholder="Password" required>
                 <div id="loginError" class="error-msg"></div>
-                <button type="submit" class="btn-primary w-full">Access Panel</button>
+                <button type="submit" class="btn-primary w-full">Login as Admin</button>
             </form>
+            <p><a href="login.html">Regular user login</a></p>
         </div>
     </div>
-    <script>
-        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+    <script type="module">
+        import { supabase } from './supabase.js';
+        const form = document.getElementById('adminLoginForm');
+        const errorDiv = document.getElementById('loginError');
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            errorDiv.innerText = '';
+            const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
-            const adminPassword = 'admin123';
-            if (password === adminPassword) {
-                localStorage.setItem('admin_authenticated', 'true');
-                window.location.href = 'admin.html';
-            } else {
-                document.getElementById('loginError').innerText = 'Invalid admin password';
+
+            // 1. Supabase Auth দিয়ে লগইন
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                errorDiv.innerText = 'Invalid email or password';
+                return;
             }
+
+            // 2. public.users টেবিল থেকে role চেক
+            const { data: profile, error: profileError } = await supabase
+                .from('users')
+                .select('role, approval_status')
+                .eq('email', email)
+                .single();
+
+            if (profileError || !profile || profile.role !== 'admin') {
+                errorDiv.innerText = 'You are not authorized as admin';
+                await supabase.auth.signOut();
+                return;
+            }
+
+            if (profile.approval_status !== 'approved') {
+                errorDiv.innerText = 'Your account is not approved yet.';
+                await supabase.auth.signOut();
+                return;
+            }
+
+            // সফল
+            localStorage.setItem('admin_authenticated', 'true');
+            window.location.href = 'admin.html';
         });
     </script>
 </body>
