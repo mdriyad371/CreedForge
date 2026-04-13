@@ -14,13 +14,13 @@
             <div class="nav-container">
                 <div class="logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div>
                 <div class="nav-links">
-                    <a href="#" onclick="loadDashboard()">Dashboard</a>
-                    <a href="#" onclick="loadUserApprovals()">User Approvals</a>
-                    <a href="#" onclick="loadOrders()">Orders</a>
-                    <a href="#" onclick="loadProductsAdmin()">Products</a>
-                    <a href="#" onclick="loadWithdrawals()">Withdrawals</a>
-                    <a href="#" onclick="loadCommissionSettings()">Commission</a>
-                    <a href="#" onclick="logout()">Logout</a>
+                    <a href="#" onclick="window.loadDashboard()">Dashboard</a>
+                    <a href="#" onclick="window.loadUserApprovals()">User Approvals</a>
+                    <a href="#" onclick="window.loadOrders()">Orders</a>
+                    <a href="#" onclick="window.loadProductsAdmin()">Products</a>
+                    <a href="#" onclick="window.loadWithdrawals()">Withdrawals</a>
+                    <a href="#" onclick="window.loadCommissionSettings()">Commission</a>
+                    <a href="#" onclick="window.logout()">Logout</a>
                 </div>
                 <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
             </div>
@@ -28,40 +28,35 @@
         <div class="mobile-menu" id="mobileMenu"></div>
         <main><div id="adminContent" class="admin-container"><div class="spinner"></div></div></main>
     </div>
-    <script type="module" src="supabase.js"></script>
-    <script type="module" src="script.js"></script>
     <script type="module">
         import { checkSession, logout } from './supabase.js';
+        import { loadDashboard, loadUserApprovals, loadOrders, loadProductsAdmin, loadWithdrawals, loadCommissionSettings } from './script.js';
+
+        // গ্লোবালি এক্সপোজ (HTML onclick এর জন্য)
+        window.loadDashboard = loadDashboard;
+        window.loadUserApprovals = loadUserApprovals;
+        window.loadOrders = loadOrders;
+        window.loadProductsAdmin = loadProductsAdmin;
+        window.loadWithdrawals = loadWithdrawals;
+        window.loadCommissionSettings = loadCommissionSettings;
         window.logout = logout;
 
         (async function() {
             try {
-                // 1. অ্যাডমিন লোকাল স্টোরেজ চেক
                 const adminAuth = localStorage.getItem('admin_authenticated');
                 if (!adminAuth) {
                     window.location.href = 'admin-login.html';
                     return;
                 }
-
-                // 2. Supabase সেশন চেক
                 const user = await checkSession();
                 if (!user || user.role !== 'admin') {
                     localStorage.removeItem('admin_authenticated');
                     window.location.href = 'admin-login.html';
                     return;
                 }
-
-                // 3. লোডিং সরান
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
-
-                // 4. ড্যাশবোর্ড লোড করুন (ফাংশন script.js থেকে আসবে)
-                if (typeof loadDashboard === 'function') {
-                    await loadDashboard();
-                } else {
-                    console.error('loadDashboard function not found');
-                    document.getElementById('adminContent').innerHTML = '<div class="glass-card p-6"><p class="text-red-400">Dashboard function missing. Please refresh or contact support.</p></div>';
-                }
+                await loadDashboard();
             } catch (err) {
                 console.error('Admin init error:', err);
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -70,4 +65,4 @@
         })();
     </script>
 </body>
-</html>
+                        </html>
