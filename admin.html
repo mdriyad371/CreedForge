@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Creed Forge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0f; z-index:9999; display:flex; align-items:center; justify-content:center;"><div class="spinner"></div></div>
+    <div id="appContent" style="display:none;">
+        <nav class="navbar"><div class="nav-container"><div class="logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div><div class="nav-links"><a href="#" onclick="loadDashboard()">Dashboard</a><a href="#" onclick="loadUserApprovals()">User Approvals</a><a href="#" onclick="loadOrders()">Orders</a><a href="#" onclick="loadProductsAdmin()">Products</a><a href="#" onclick="loadWithdrawals()">Withdrawals</a><a href="#" onclick="loadCommissionSettings()">Commission</a><a href="#" onclick="logout()">Logout</a></div><div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div></div></nav>
+        <div class="mobile-menu" id="mobileMenu"></div>
+        <main><div id="adminContent" class="admin-container"><div class="spinner"></div></div></main>
+    </div>
+    <script type="module" src="supabase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { checkSession, logout } from './supabase.js';
+        window.logout = logout;
+        (async function() {
+            const adminAuth = localStorage.getItem('admin_authenticated');
+            if (!adminAuth) { window.location.href = 'admin-login.html'; return; }
+            const user = await checkSession();
+            if (!user || user.role !== 'admin') { window.location.href = 'admin-login.html'; return; }
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            loadDashboard();
+        })();
+    </script>
+</body>
+</html>

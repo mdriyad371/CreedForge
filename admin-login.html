@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Creed Forge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div>
+            <h2>Admin Access</h2>
+            <p>Enter admin password</p>
+            <form id="adminLoginForm">
+                <input type="password" id="adminPassword" placeholder="Admin Password" required>
+                <div id="loginError" class="error-msg"></div>
+                <button type="submit" class="btn-primary w-full">Access Panel</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            const adminPassword = 'admin123';
+            if (password === adminPassword) {
+                localStorage.setItem('admin_authenticated', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                document.getElementById('loginError').innerText = 'Invalid admin password';
+            }
+        });
+    </script>
+</body>
+</html>

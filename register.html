@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Creed Forge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo"><i class="fas fa-code-branch"></i><span>Creed<span class="text-pink">Forge</span></span></div>
+            <h2>Create Account</h2>
+            <p>Join as Volunteer or Worker</p>
+            <form id="registerForm">
+                <select id="regRole" required><option value="volunteer">Volunteer</option><option value="worker">Worker</option></select>
+                <input type="text" id="regName" placeholder="Full Name" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="tel" id="regPhone" placeholder="Phone Number" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="url" id="regSocial" placeholder="Social Media / GitHub Link">
+                <input type="text" id="regRef" placeholder="Referral Code (optional)">
+                <div id="regError" class="error-msg"></div>
+                <button type="submit" class="btn-primary w-full">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="login.html">Sign In</a></p>
+        </div>
+    </div>
+    <script type="module" src="supabase.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

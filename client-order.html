@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order - Creed Forge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="client-container">
+        <div id="clientContent" class="client-card"><div class="spinner"></div></div>
+    </div>
+    <script type="module" src="supabase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { loadClientOrderForm } from './script.js';
+        (async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            const productId = urlParams.get('product');
+            if (!refCode || !productId) {
+                document.getElementById('clientContent').innerHTML = '<div class="text-center"><p class="text-red-400">Invalid link</p><a href="index.html" class="btn-primary mt-4">Go Home</a></div>';
+                return;
+            }
+            await loadClientOrderForm(refCode, productId);
+        })();
+    </script>
+</body>
+</html>
