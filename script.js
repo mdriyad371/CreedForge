@@ -1,5 +1,6 @@
-// script.js - সম্পূর্ণ লজিক (সংশোধিত)
+// script.js
 import { supabase, checkSession, requireAuth, logout } from './supabase.js';
+
 window.checkSession = checkSession;
 window.requireAuth = requireAuth;
 window.logout = logout;
@@ -215,7 +216,7 @@ function showToast(msg, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// গ্লোবালি ফাংশন এক্সপোজ করুন (HTML এর onclick এর জন্য)
+// গ্লোবালি ফাংশন এক্সপোজ করুন
 window.loadVolunteerDashboard = loadVolunteerDashboard;
 window.loadProducts = loadProducts;
 window.loadVolunteerOrders = loadVolunteerOrders;
