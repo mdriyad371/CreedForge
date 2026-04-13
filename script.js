@@ -1,4 +1,4 @@
-// script.js
+// script.js - Creed Forge সম্পূর্ণ লজিক
 import { supabase, checkSession, requireAuth, logout } from './supabase.js';
 
 window.checkSession = checkSession;
@@ -7,7 +7,46 @@ window.logout = logout;
 
 let currentUser = null;
 
-// ==================== রেজিস্ট্রেশন ====================
+// ==================== হেল্পার ফাংশন ====================
+async function getSettings() {
+    const { data } = await supabase.from('settings').select('*').single();
+    return data || { self_commission: 20, upline_commission: 5 };
+}
+
+async function getProducts() {
+    const { data } = await supabase.from('products').select('*').eq('status', 'active');
+    return data || [];
+}
+
+async function getOrders() {
+    const { data } = await supabase.from('orders').select('*');
+    return data || [];
+}
+
+async function getUsers() {
+    const { data } = await supabase.from('users').select('*');
+    return data || [];
+}
+
+async function getCommissions() {
+    const { data } = await supabase.from('commissions').select('*');
+    return data || [];
+}
+
+async function getWithdrawals() {
+    const { data } = await supabase.from('withdrawals').select('*');
+    return data || [];
+}
+
+function showToast(msg, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-5 right-5 z-50 px-4 py-2 rounded-lg text-white ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ==================== রেজিস্ট্রেশন ও লগইন (HTML ফর্মের সাথে সংযুক্ত) ====================
 document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('regEmail').value.trim();
@@ -24,19 +63,13 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
         return;
     }
 
-    // 1. Supabase Auth এ ইউজার তৈরি
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-        email, password
-    });
+    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
     if (authError) {
         errorDiv.innerText = authError.message;
         return;
     }
 
-    // 2. ইউজারের জন্য রেফারেল কোড জেনারেট
     const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-    // 3. public.users টেবিলে প্রোফাইল সংরক্ষণ
     const { error: profileError } = await supabase.from('users').insert({
         id: authData.user.id,
         email,
@@ -60,20 +93,18 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
     window.location.href = 'login.html';
 });
 
-// ==================== লগইন ====================
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorDiv = document.getElementById('loginError');
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
         errorDiv.innerText = 'ইমেইল বা পাসওয়ার্ড ভুল';
         return;
     }
 
-    // ইউজারের রোল চেক করে রিডাইরেক্ট
     const user = await checkSession();
     if (user.role === 'admin') window.location.href = 'admin.html';
     else if (user.role === 'volunteer') window.location.href = 'volunteer.html';
@@ -204,6 +235,7 @@ async function loadWorkerDashboard() {
 }
 
 async function loadAvailableJobs() { await loadWorkerDashboard(); }
+
 async function loadMyJobs() {
     const container = document.getElementById('workerContent');
     if (!container) return;
@@ -273,37 +305,7 @@ async function loadProductsAdmin() { await loadProducts(); }
 async function loadWithdrawals() { await loadDashboard(); }
 async function loadCommissionSettings() { await loadDashboard(); }
 
-// ==================== হেল্পার ফাংশন ====================
-async function getSettings() {
-    const { data } = await supabase.from('settings').select('*').single();
-    return data || { self_commission: 20, upline_commission: 5 };
-}
-
-async function getProducts() {
-    const { data } = await supabase.from('products').select('*').eq('status', 'active');
-    return data || [];
-}
-
-async function getOrders() {
-    const { data } = await supabase.from('orders').select('*');
-    return data || [];
-}
-
-async function getUsers() {
-    const { data } = await supabase.from('users').select('*');
-    return data || [];
-}
-
-async function getCommissions() {
-    const { data } = await supabase.from('commissions').select('*');
-    return data || [];
-}
-
-async function getWithdrawals() {
-    const { data } = await supabase.from('withdrawals').select('*');
-    return data || [];
-}
-
+// ==================== অ্যাকশন ফাংশন (onclick ইভেন্টের জন্য) ====================
 window.generateShareLink = (productId) => {
     const shareUrl = `${window.location.origin}/client-order.html?ref=${currentUser.referral_code}&product=${productId}`;
     navigator.clipboard.writeText(shareUrl);
@@ -395,17 +397,17 @@ export async function loadClientOrderForm(refCode, productId) {
     });
 }
 
-function showToast(msg, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `fixed bottom-5 right-5 z-50 px-4 py-2 rounded-lg text-white ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-// গ্লোবাল ফাংশন এক্সপোজ (HTML-এর onclick এর জন্য)
+// ==================== গ্লোবালি ফাংশন এক্সপোজ করুন (HTML-এর onclick এর জন্য) ====================
 window.loadVolunteerDashboard = loadVolunteerDashboard;
 window.loadProducts = loadProducts;
 window.loadVolunteerOrders = loadVolunteerOrders;
 window.loadWorkerDashboard = loadWorkerDashboard;
-window.loadAvailableJobs = loadAvailableJo
+window.loadAvailableJobs = loadAvailableJobs;
+window.loadMyJobs = loadMyJobs;
+window.loadDashboard = loadDashboard;
+window.loadUserApprovals = loadUserApprovals;
+window.loadOrders = loadOrders;
+window.loadProductsAdmin = loadProductsAdmin;
+window.loadWithdrawals = loadWithdrawals;
+window.loadCommissionSettings = loadCommissionSettings;
+window.changePage = changePage;
