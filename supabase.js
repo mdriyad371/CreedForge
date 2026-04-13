@@ -1,9 +1,9 @@
-// supabase.js - Supabase ক্লায়েন্ট ও অথেনটিকেশন
+// supabase.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// বিল্ড টাইমে এনভায়রনমেন্ট ভেরিয়েবল প্রতিস্থাপিত হবে
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// আপনার দেওয়া Supabase credentials
+const SUPABASE_URL = 'https://pebgwkbqcpcioggxqrpg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlYmd3a2JxY3BjaW9nZ3hxcnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjg5MTIsImV4cCI6MjA5MTY0NDkxMn0.wbtDN9-pfEYmERCbGVgAlCh22nBY1sMngNTEGEvLQXE';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -35,7 +35,7 @@ export async function logout() {
     window.location.href = 'index.html';
 }
 
-// গ্লোবালি সুপাবেস অবজেক্ট রাখুন (script.js যাতে ব্যবহার করতে পারে)
+// গ্লোবালি এক্সপোজ (script.js এর জন্য)
 window.supabase = supabase;
 window.checkSession = checkSession;
 window.requireAuth = requireAuth;
