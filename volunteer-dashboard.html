@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Volunteer Panel (Approved)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b0a0f; --pink: #ec4899; --blue: #06b6d4; --text: #ffffff; --text-secondary: #94a3b8; --card-bg: #1a1a2e; --border: #1e293b; --navbar-height: 70px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .navbar { background:#0f0f1a; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; height:var(--navbar-height); display:flex; align-items:center; }
+        .navbar-container { max-width:1200px; margin:0 auto; width:100%; padding:0 24px; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:24px; font-weight:800; letter-spacing:-0.5px; text-decoration:none; color: white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .nav-links { display:flex; align-items:center; gap:8px; }
+        .nav-link { padding:10px 16px; border-radius:8px; color:var(--text-secondary); font-weight:500; cursor:pointer; transition:0.2s; font-size:15px; background:transparent; border:none; font-family:inherit; }
+        .nav-link:hover { background:rgba(255,255,255,0.05); color:white; }
+        .nav-link.active { background:rgba(236,72,153,0.15); color:var(--pink); }
+        .btn-logout { padding:10px 16px; border:1px solid var(--border); border-radius:8px; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:500; font-size:14px; transition:0.2s; font-family:inherit; margin-left:8px; }
+        .btn-logout:hover { border-color:var(--pink); color:var(--pink); }
+        .menu-toggle { display:none; background:transparent; border:1px solid var(--border); color:white; font-size:20px; cursor:pointer; padding:8px 12px; border-radius:8px; }
+        .mobile-menu { display:none; position:absolute; top:var(--navbar-height); left:0; right:0; background:#0f0f1a; border-bottom:1px solid var(--border); flex-direction:column; padding:16px 24px; gap:8px; z-index:49; }
+        .mobile-menu.open { display:flex; }
+        .main-content { max-width:1200px; margin:0 auto; padding:40px 24px; }
+        .tab-content { display:none; } .tab-content.active { display:block; }
+        .page-title { font-size:26px; font-weight:700; margin-bottom:28px; color: var(--text); }
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-bottom:28px; }
+        .stat-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:22px 20px; }
+        .stat-label { font-size:13px; color:var(--text-secondary); margin-bottom:6px; }
+        .stat-value { font-size:26px; font-weight:700; color:var(--text); }
+        .stat-value.pink { color:var(--pink); }
+        .glass-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+        .card-title { font-size:16px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; color: var(--text); }
+        .commission-levels { display:flex; gap:12px; margin-top:8px; }
+        .level-badge { flex:1; background:rgba(255,255,255,0.03); border-radius:12px; padding:16px; text-align:center; border:1px solid transparent; }
+        .level-badge.self { border-color:rgba(236,72,153,0.3); background:rgba(236,72,153,0.05); }
+        .level-badge.upline { border-color:rgba(6,182,212,0.3); background:rgba(6,182,212,0.05); }
+        .level-label { font-size:13px; color:var(--text-secondary); margin-bottom:6px; }
+        .level-value { font-size:26px; font-weight:700; }
+        .level-value.self-color { color:var(--pink); } .level-value.upline-color { color:var(--blue); }
+        .order-table { width:100%; border-collapse:collapse; margin-top:8px; }
+        .order-table th { text-align:left; padding-bottom:12px; color:var(--text-secondary); font-weight:500; font-size:12px; border-bottom:1px solid var(--border); padding-right:20px; }
+        .order-table th:last-child { padding-right:0; }
+        .order-table td { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px; padding-right:20px; }
+        .order-table td:last-child { padding-right:0; }
+        .product-col { max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .status-badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+        .status-pending { background:rgba(245,158,11,0.15); color:#fbbf24; }
+        .status-completed { background:rgba(16,185,129,0.15); color:#34d399; }
+        .myjob-link { font-size:15px; font-weight:600; word-break:break-all; padding:14px; background:rgba(255,255,255,0.04); border-radius:10px; margin:12px 0; border:1px solid var(--border); color: var(--text); }
+        .product-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:16px; margin-top:16px; }
+        .product-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; flex-direction:column; transition:0.2s; }
+        .product-card:hover { border-color:var(--pink); }
+        .product-name { font-size:15px; font-weight:600; margin-bottom:6px; }
+        .product-desc { color:var(--text-secondary); font-size:12px; line-height:1.4; margin-bottom:10px; flex:1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .product-price { font-size:14px; color:var(--blue); margin-bottom:10px; font-weight:600; }
+        .btn-group { display:flex; gap:8px; }
+        .btn-share-small, .btn-details-small { padding:6px 12px; border-radius:6px; font-weight:500; cursor:pointer; font-size:11px; transition:0.2s; font-family:inherit; background:transparent; flex:1; text-align:center; }
+        .btn-share-small { border:1px solid var(--pink); color:var(--pink); } .btn-share-small:hover { background:rgba(236,72,153,0.1); }
+        .btn-details-small { border:1px solid var(--border); color:var(--text-secondary); } .btn-details-small:hover { border-color:var(--text); color:white; }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:100; justify-content:center; align-items:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:30px; max-width:480px; width:90%; }
+        .modal-title { font-size:22px; font-weight:700; margin-bottom:12px; }
+        .modal-desc { color:var(--text-secondary); line-height:1.5; margin-bottom:16px; font-size:14px; }
+        .demo-link { color:var(--blue); text-decoration:underline; }
+        .btn-close { margin-top:18px; padding:8px 22px; border:1px solid var(--border); border-radius:6px; background:transparent; color:white; cursor:pointer; }
+        .profile-header { display:flex; align-items:center; gap:20px; margin-bottom:24px; }
+        .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg, #ec4899, #8b5cf6); display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:700; color:white; flex-shrink:0; }
+        .detail-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); flex-wrap:wrap; }
+        .detail-label { color:var(--text-secondary); font-weight:500; min-width:110px; }
+        .amount-highlight { color:var(--pink); font-weight:700; }
+        .form-group { margin-bottom:18px; }
+        .form-group label { display:block; margin-bottom:6px; color:var(--text-secondary); font-size:13px; }
+        .form-group input { width:100%; padding:12px 14px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; color:white; outline:none; font-family:inherit; }
+        .btn-primary { padding:12px 28px; background:var(--pink); border:none; border-radius:8px; color:white; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit; }
+        .btn-primary:hover { background:#db2777; }
+        @media (max-width:768px) { .nav-links { display:none; } .menu-toggle { display:block; } .mobile-menu .nav-link, .mobile-menu .btn-logout { width:100%; text-align:left; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+            <div class="nav-links">
+                <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-link" data-tab="myjob">My Job</button>
+                <button class="nav-link" data-tab="profile">Profile</button>
+                <button class="nav-link" data-tab="withdraw">Withdraw</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+            <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-link" data-tab="myjob">My Job</button>
+            <button class="nav-link" data-tab="profile">Profile</button>
+            <button class="nav-link" data-tab="withdraw">Withdraw</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Approved status -->
+        <div id="approvalStatus" style="display:none;">approved</div>
+
+        <div id="dashboardTab" class="tab-content active">
+            <h1 class="page-title">Dashboard Overview</h1>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Total Income</div><div class="stat-value pink">৳28,700</div></div>
+                <div class="stat-card"><div class="stat-label">Total Referrals</div><div class="stat-value">8</div></div>
+                <div class="stat-card"><div class="stat-label">Current Balance</div><div class="stat-value pink">৳12,500</div></div>
+                <div class="stat-card"><div class="stat-label">Upline User</div><div class="stat-value">rafiq.h</div></div>
+                <div class="stat-card"><div class="stat-label">Total Work</div><div class="stat-value">5</div></div>
+            </div>
+            <div class="glass-card">
+                <div class="card-title">Commission Structure</div>
+                <div class="commission-levels">
+                    <div class="level-badge self"><div class="level-label">Self Commission</div><div class="level-value self-color">20%</div></div>
+                    <div class="level-badge upline"><div class="level-label">Upline Bonus</div><div class="level-value upline-color">5%</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="myjobTab" class="tab-content">
+            <div id="myjobApprovalMessage" class="glass-card" style="text-align:center; padding:40px; display:none;">
+                <p style="font-size:18px; color:var(--text-secondary);">Your account is pending admin approval.<br>You can access My Job once approved.</p>
+            </div>
+            <div id="myjobContent" style="display:block;">
+                <h1 class="page-title">My Job</h1>
+                <div class="glass-card">
+                    <div class="card-title">Product List Link for Clients</div>
+                    <p style="color:var(--text-secondary); margin-bottom:12px;">Share this link – clients can browse all products.</p>
+                    <div class="myjob-link" id="myJobLink">https://creedforge.com/products-listing.html?ref=VOL12345</div>
+                    <button class="btn-primary" onclick="copyMyJobLink()">Copy Link</button>
+                </div>
+                <div class="glass-card">
+                    <div class="card-title">Individual Products</div>
+                    <div class="product-grid" id="productGrid"></div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-title">My Job Status</div>
+                    <table class="order-table">
+                        <thead><tr><th>Order ID</th><th>Product</th><th>Amount</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>#1023</td><td class="product-col">E-commerce Website</td><td>৳15,000</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+                            <tr><td>#1018</td><td class="product-col">Portfolio Site</td><td>৳8,000</td><td><span class="status-badge status-completed">Completed</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="profileTab" class="tab-content">
+            <h1 class="page-title">My Profile</h1>
+            <div class="glass-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">A</div>
+                    <div>
+                        <h2 style="font-size:22px; font-weight:700;" id="profileName">Ahsan Habib</h2>
+                        <p style="color:var(--text-secondary); font-size:13px;">Volunteer</p>
+                    </div>
+                </div>
+                <div class="detail-row"><span class="detail-label">Phone</span><span id="displayPhone">+8801712-345678</span></div>
+                <div class="detail-row"><span class="detail-label">Email</span><span id="displayEmail">ahsan@example.com</span></div>
+                <div class="detail-row"><span class="detail-label">Social Media</span><span><a href="#" target="_blank" style="color:var(--blue);" id="displaySocial">facebook.com/ahsan</a></span></div>
+                <div class="detail-row"><span class="detail-label">Referral Code</span><span>VOL12345</span></div>
+                <div class="detail-row"><span class="detail-label">Balance</span><span class="amount-highlight">৳12,500</span></div>
+                <div class="detail-row"><span class="detail-label">Total Earned</span><span class="amount-highlight">৳28,700</span></div>
+            </div>
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-title" style="cursor:pointer;" onclick="toggleEditProfile()">Edit Profile</div>
+                <div id="editProfileForm" style="display:none; margin-top:12px;">
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="editPhone" value="+8801712-345678"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="editEmail" value="ahsan@example.com"></div>
+                    <div class="form-group"><label>Social Media Link</label><input type="url" id="editSocial" value="https://facebook.com/ahsan"></div>
+                    <div class="form-group"><label>Profile Photo URL (optional)</label><input type="url" id="editPhotoUrl"></div>
+                    <div class="form-group"><label>New Password (optional)</label><input type="password" id="editPassword"></div>
+                    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="withdrawTab" class="tab-content">
+            <h1 class="page-title">Withdraw Funds</h1>
+            <div class="glass-card">
+                <div style="display:flex; justify-content:space-between; padding:14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:18px;">
+                    <span style="color:var(--text-secondary);">Available Balance</span>
+                    <span style="font-size:22px; font-weight:700; color:var(--pink);">৳12,500</span>
+                </div>
+                <div class="form-group"><label>Amount (BDT)</label><input type="number" id="wAmount" min="1000" placeholder="Min 1,000"></div>
+                <div class="form-group"><label>Mobile Number</label><input type="tel" id="wMobile" placeholder="01XXXXXXXXX"></div>
+                <div class="form-group"><label>Payment Method</label>
+                    <select id="wMethod" style="width:100%; padding:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; color:white;">
+                        <option value="">Select</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%;" onclick="submitWithdraw()">Submit Request</button>
+                <p id="wError" style="color:#f87171; font-size:12px; margin-top:6px; display:none;"></p>
+            </div>
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-title">Withdrawal History</div>
+                <table class="order-table">
+                    <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>2026-04-10</td><td>৳2,000</td><td>bKash</td><td><span class="status-badge" style="background:rgba(16,185,129,0.15); color:#34d399;">Approved</span></td></tr>
+                        <tr><td>2026-03-28</td><td>৳3,000</td><td>Bank</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="productDetailModal">
+        <div class="modal-box">
+            <div class="modal-title" id="modalProductName"></div>
+            <div class="modal-desc" id="modalProductDesc"></div>
+            <p style="margin-bottom:8px;"><strong>Price:</strong> <span id="modalProductPrice" style="color:var(--pink);"></span></p>
+            <p><strong>Demo:</strong> <a href="#" target="_blank" id="modalDemoLink" class="demo-link">View Demo</a></p>
+            <button class="btn-close" onclick="closeProductModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Approval already set to 'approved'
+        const approvalStatus = document.getElementById('approvalStatus').innerText.trim();
+        const myjobApprovalMsg = document.getElementById('myjobApprovalMessage');
+        const myjobContent = document.getElementById('myjobContent');
+        function applyApproval() {
+            if (approvalStatus === 'approved') {
+                myjobApprovalMsg.style.display = 'none';
+                myjobContent.style.display = 'block';
+            } else {
+                myjobApprovalMsg.style.display = 'block';
+                myjobContent.style.display = 'none';
+            }
+        }
+        applyApproval();
+
+        const navButtons = document.querySelectorAll('.nav-link[data-tab]');
+        const tabs = document.querySelectorAll('.tab-content');
+        function switchTab(tabName) {
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-link[data-tab="${tabName}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById('mobileMenu').classList.remove('open');
+        }
+        navButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        document.querySelectorAll('#mobileMenu .nav-link[data-tab]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+        function copyMyJobLink() { navigator.clipboard.writeText(document.getElementById('myJobLink').innerText).then(() => alert('Link copied!')); }
+        const refCode = 'VOL12345';
+        const products = [
+            { id:1, name:'E-commerce Website', price:15000, desc:'Full online store with cart, checkout, payment gateway.', demo:'https://demo.creedforge.com/ecommerce' },
+            { id:2, name:'Portfolio Site', price:8000, desc:'Showcase your work with a stunning personal portfolio.', demo:'https://demo.creedforge.com/portfolio' },
+            { id:3, name:'Blog with SEO', price:12000, desc:'Content-focused blog with built-in SEO tools.', demo:'https://demo.creedforge.com/blog' },
+            { id:4, name:'Business Landing Page', price:10000, desc:'Modern landing page for high conversion.', demo:'https://demo.creedforge.com/landing' },
+            { id:5, name:'Custom Web Application', price:25000, desc:'Tailor-made web app with authentication and database.', demo:'https://demo.creedforge.com/webapp' },
+            { id:6, name:'Multi-Vendor Marketplace', price:30000, desc:'Advanced marketplace platform with vendor dashboards.', demo:'https://demo.creedforge.com/marketplace' }
+        ];
+        function renderProductGrid() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => `<div class="product-card"><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div><div class="product-price">৳ ${p.price.toLocaleString()}</div><div class="btn-group"><button class="btn-details-small" onclick="openProductModal(${p.id})">View</button><button class="btn-share-small" onclick="copyProductLink(${p.id})">Share</button></div></div>`).join('');
+        }
+        function copyProductLink(productId) { navigator.clipboard.writeText(`https://creedforge.com/order.html?ref=${refCode}&product=${productId}`).then(() => alert('Product link copied!')); }
+        function openProductModal(id) {
+            const p = products.find(pr => pr.id === id);
+            document.getElementById('modalProductName').textContent = p.name;
+            document.getElementById('modalProductDesc').textContent = p.desc;
+            document.getElementById('modalProductPrice').textContent = '৳ ' + p.price.toLocaleString();
+            document.getElementById('modalDemoLink').href = p.demo;
+            document.getElementById('productDetailModal').classList.add('active');
+        }
+        function closeProductModal() { document.getElementById('productDetailModal').classList.remove('active'); }
+
+        function toggleEditProfile() { document.getElementById('editProfileForm').style.display = document.getElementById('editProfileForm').style.display === 'none' ? 'block' : 'none'; }
+        function saveProfile() {
+            const phone = document.getElementById('editPhone').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const social = document.getElementById('editSocial').value.trim();
+            const photoUrl = document.getElementById('editPhotoUrl').value.trim();
+            if (phone) document.getElementById('displayPhone').innerText = phone;
+            if (email) document.getElementById('displayEmail').innerText = email;
+            if (social) { const el = document.getElementById('displaySocial'); el.href = social; el.innerText = social.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+            if (photoUrl) { const av = document.getElementById('profileAvatar'); av.style.backgroundImage = `url(${photoUrl})`; av.style.backgroundSize = 'cover'; av.innerText = ''; }
+            if (document.getElementById('editPassword').value) alert('Password updated (demo)');
+            toggleEditProfile();
+            alert('Profile updated!');
+        }
+
+        function submitWithdraw() {
+            const amount = document.getElementById('wAmount').value;
+            const mobile = document.getElementById('wMobile').value.trim();
+            const method = document.getElementById('wMethod').value;
+            const err = document.getElementById('wError');
+            if (!amount || amount < 1000) { err.style.display='block'; err.textContent='Min BDT 1,000'; return; }
+            if (!/^01[3-9]\d{8}$/.test(mobile)) { err.style.display='block'; err.textContent='Invalid mobile'; return; }
+            if (!method) { err.style.display='block'; err.textContent='Select method'; return; }
+            err.style.display='none';
+            alert(`Submitted! Amount: BDT ${amount}`);
+            document.getElementById('wAmount').value='';
+            document.getElementById('wMobile').value='';
+            document.getElementById('wMethod').value='';
+        }
+
+        function logout() { if(confirm('Logout?')) window.location.href='index.html'; }
+
+        renderProductGrid();
+    </script>
+</body>
+</html>

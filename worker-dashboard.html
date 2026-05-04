@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Worker Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --pink: #ec4899;
+            --blue: #06b6d4;
+            --text: #ffffff;
+            --text-secondary: #94a3b8;
+            --card-bg: #1a1a2e;
+            --border: #1e293b;
+            --navbar-height: 70px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .navbar { background:#0f0f1a; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; height:var(--navbar-height); display:flex; align-items:center; }
+        .navbar-container { max-width:1200px; margin:0 auto; width:100%; padding:0 24px; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:24px; font-weight:800; letter-spacing:-0.5px; text-decoration:none; color: white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .nav-links { display:flex; align-items:center; gap:8px; }
+        .nav-link { padding:10px 16px; border-radius:8px; color:var(--text-secondary); font-weight:500; cursor:pointer; transition:0.2s; font-size:15px; background:transparent; border:none; font-family:inherit; }
+        .nav-link:hover { background:rgba(255,255,255,0.05); color:white; }
+        .nav-link.active { background:rgba(236,72,153,0.15); color:var(--pink); }
+        .btn-logout { padding:10px 16px; border:1px solid var(--border); border-radius:8px; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:500; font-size:14px; transition:0.2s; font-family:inherit; margin-left:8px; }
+        .btn-logout:hover { border-color:var(--pink); color:var(--pink); }
+        .menu-toggle { display:none; background:transparent; border:1px solid var(--border); color:white; font-size:20px; cursor:pointer; padding:8px 12px; border-radius:8px; }
+        .mobile-menu { display:none; position:absolute; top:var(--navbar-height); left:0; right:0; background:#0f0f1a; border-bottom:1px solid var(--border); flex-direction:column; padding:16px 24px; gap:8px; z-index:49; }
+        .mobile-menu.open { display:flex; }
+        .main-content { max-width:1200px; margin:0 auto; padding:40px 24px; }
+        .tab-content { display:none; } .tab-content.active { display:block; }
+        .page-title { font-size:26px; font-weight:700; margin-bottom:28px; color: var(--text); }
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-bottom:28px; }
+        .stat-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:22px 20px; }
+        .stat-label { font-size:13px; color:var(--text-secondary); margin-bottom:6px; }
+        .stat-value { font-size:26px; font-weight:700; color:var(--text); }
+        .stat-value.pink { color:var(--pink); }
+        .glass-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+        .card-title { font-size:16px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; color: var(--text); }
+        .worker-payout-box { background:rgba(255,255,255,0.03); border-radius:12px; padding:16px; text-align:center; }
+        .order-table { width:100%; border-collapse:collapse; margin-top:8px; }
+        .order-table th { text-align:left; padding-bottom:12px; color:var(--text-secondary); font-weight:500; font-size:12px; border-bottom:1px solid var(--border); padding-right:20px; }
+        .order-table th:last-child { padding-right:0; }
+        .order-table td { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px; padding-right:20px; }
+        .order-table td:last-child { padding-right:0; }
+        .product-col { max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .status-badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+        .status-assigned { background:rgba(59,130,246,0.15); color:#60a5fa; }
+        .job-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+        .job-info { flex:1; }
+        .job-title { font-size:16px; font-weight:600; margin-bottom:4px; }
+        .job-meta { font-size:13px; color:var(--text-secondary); }
+        .countdown { font-weight:600; color:#fbbf24; }
+        .btn-sm { padding:8px 16px; border-radius:6px; font-weight:500; cursor:pointer; font-size:13px; transition:0.2s; font-family:inherit; border:none; }
+        .btn-accept { background:var(--pink); color:white; } .btn-accept:disabled { opacity:0.4; cursor:not-allowed; background:#666; }
+        .btn-submit { background:transparent; border:1px solid var(--blue); color:var(--blue); }
+        .btn-view { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-view:hover { border-color: var(--pink); color: var(--pink); }
+        .profile-header { display:flex; align-items:center; gap:20px; margin-bottom:24px; }
+        .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg, #ec4899, #8b5cf6); display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:700; color:white; flex-shrink:0; }
+        .detail-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); flex-wrap:wrap; }
+        .detail-label { color:var(--text-secondary); font-weight:500; min-width:110px; }
+        .amount-highlight { color:var(--pink); font-weight:700; }
+        .form-group { margin-bottom:18px; }
+        .form-group label { display:block; margin-bottom:6px; color:var(--text-secondary); font-size:13px; }
+        .form-group input, .form-group textarea { width:100%; padding:12px 14px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; color:white; outline:none; font-family:inherit; }
+        .btn-primary { padding:12px 28px; background:var(--pink); border:none; border-radius:8px; color:white; font-weight:600; cursor:pointer; font-size:14px; font-family:inherit; transition:0.2s; }
+        .btn-primary:hover { background:#db2777; }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:100; justify-content:center; align-items:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:30px; max-width:480px; width:90%; }
+        .modal-title { font-size:22px; font-weight:700; margin-bottom:12px; }
+        .btn-close { margin-top:16px; padding:8px 22px; border:1px solid var(--border); border-radius:6px; background:transparent; color:white; cursor:pointer; }
+        @media (max-width:768px) { .nav-links { display:none; } .menu-toggle { display:block; } .mobile-menu .nav-link, .mobile-menu .btn-logout { width:100%; text-align:left; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+            <div class="nav-links">
+                <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-link" data-tab="myjob">My Job</button>
+                <button class="nav-link" data-tab="profile">Profile</button>
+                <button class="nav-link" data-tab="withdraw">Withdraw</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+            <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-link" data-tab="myjob">My Job</button>
+            <button class="nav-link" data-tab="profile">Profile</button>
+            <button class="nav-link" data-tab="withdraw">Withdraw</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Approved status (hidden) -->
+        <div id="approvalStatus" style="display:none;">approved</div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboardTab" class="tab-content active">
+            <h1 class="page-title">Dashboard Overview</h1>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Total Income</div><div class="stat-value pink" id="totalIncome">৳45,000</div></div>
+                <div class="stat-card"><div class="stat-label">Total Referrals</div><div class="stat-value">3</div></div>
+                <div class="stat-card"><div class="stat-label">Current Balance</div><div class="stat-value pink" id="currentBalance">৳18,200</div></div>
+                <div class="stat-card"><div class="stat-label">Upline User</div><div class="stat-value">john.d</div></div>
+                <div class="stat-card"><div class="stat-label">Total Work</div><div class="stat-value">8</div></div>
+            </div>
+            <div class="glass-card">
+                <div class="card-title">Worker Payout</div>
+                <div class="worker-payout-box">
+                    <p style="font-size:16px; color:var(--text-secondary); margin-bottom:8px;">You earn <strong style="color:var(--pink);" id="workerPayoutPercent">70%</strong> of each project value.</p>
+                    <p style="font-size:14px; color:var(--text-secondary);">Example: Project ৳10,000 → Your earning ৳<span id="exampleEarning">7,000</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Job Tab -->
+        <div id="myjobTab" class="tab-content">
+            <div id="myjobApprovalMessage" class="glass-card" style="text-align:center; padding:40px; display:none;">
+                <p style="font-size:18px; color:var(--text-secondary);">Your account is pending admin approval.<br>You can access My Job once approved.</p>
+            </div>
+            <div id="myjobContent" style="display:block;">
+                <h1 class="page-title">My Job</h1>
+                <div class="glass-card">
+                    <div class="card-title">Available Jobs</div>
+                    <div id="availableJobsContainer"></div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-title">My Active Job</div>
+                    <div id="activeJobContainer">
+                        <p style="color:var(--text-secondary);" id="noActiveJobMsg">No active job. Accept a job from the list.</p>
+                        <table class="order-table" id="activeJobTable" style="display:none;">
+                            <thead><tr><th>Order ID</th><th>Product</th><th>Amount</th><th>Status</th><th>Deadline</th><th>Action</th></tr></thead>
+                            <tbody id="activeJobBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profileTab" class="tab-content">
+            <h1 class="page-title">My Profile</h1>
+            <div class="glass-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="workerAvatar">W</div>
+                    <div>
+                        <h2 style="font-size:22px; font-weight:700;" id="workerName">Wahid Rahman</h2>
+                        <p style="color:var(--text-secondary); font-size:13px;">Worker</p>
+                    </div>
+                </div>
+                <div class="detail-row"><span class="detail-label">Phone</span><span id="displayPhone">+8801711-223344</span></div>
+                <div class="detail-row"><span class="detail-label">Email</span><span id="displayEmail">wahid@example.com</span></div>
+                <div class="detail-row"><span class="detail-label">Social Media</span><span><a href="#" target="_blank" style="color:var(--blue);" id="displaySocial">github.com/wahid</a></span></div>
+                <div class="detail-row"><span class="detail-label">Referral Code</span><span>WRK98765</span></div>
+                <div class="detail-row"><span class="detail-label">Balance</span><span class="amount-highlight">৳18,200</span></div>
+                <div class="detail-row"><span class="detail-label">Total Earned</span><span class="amount-highlight">৳45,000</span></div>
+            </div>
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-title" style="cursor:pointer;" onclick="toggleEditProfile()">Edit Profile</div>
+                <div id="editProfileForm" style="display:none; margin-top:12px;">
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="editPhone" value="+8801711-223344"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="editEmail" value="wahid@example.com"></div>
+                    <div class="form-group"><label>Social Media Link</label><input type="url" id="editSocial" value="https://github.com/wahid"></div>
+                    <div class="form-group"><label>Profile Photo URL (optional)</label><input type="url" id="editPhotoUrl"></div>
+                    <div class="form-group"><label>New Password (optional)</label><input type="password" id="editPassword"></div>
+                    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdraw Tab -->
+        <div id="withdrawTab" class="tab-content">
+            <h1 class="page-title">Withdraw Funds</h1>
+            <div class="glass-card">
+                <div style="display:flex; justify-content:space-between; padding:14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:18px;">
+                    <span style="color:var(--text-secondary);">Available Balance</span>
+                    <span style="font-size:22px; font-weight:700; color:var(--pink);">৳18,200</span>
+                </div>
+                <div class="form-group"><label>Amount (BDT)</label><input type="number" id="wAmount" min="1000" placeholder="Min 1,000"></div>
+                <div class="form-group"><label>Mobile Number</label><input type="tel" id="wMobile" placeholder="01XXXXXXXXX"></div>
+                <div class="form-group"><label>Payment Method</label>
+                    <select id="wMethod" style="width:100%; padding:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; color:white;">
+                        <option value="">Select</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%;" onclick="submitWithdraw()">Submit Request</button>
+                <p id="wError" style="color:#f87171; font-size:12px; margin-top:6px; display:none;"></p>
+            </div>
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-title">Withdrawal History</div>
+                <table class="order-table">
+                    <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>2026-04-05</td><td>৳4,000</td><td>Nagad</td><td><span class="status-badge" style="background:rgba(16,185,129,0.15); color:#34d399;">Approved</span></td></tr>
+                        <tr><td>2026-03-20</td><td>৳2,500</td><td>bKash</td><td><span class="status-badge status-pending">Pending</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delivery Modal -->
+    <div class="modal-overlay" id="deliveryModal">
+        <div class="modal-box">
+            <div class="modal-title">Submit Delivery</div>
+            <div class="form-group"><label>Website Link</label><input type="url" id="deliveryLink" required></div>
+            <div class="form-group"><label>Login Credentials (optional)</label><input type="text" id="deliveryCredentials"></div>
+            <div class="form-group"><label>Delivery Notes</label><textarea id="deliveryNotes" rows="3"></textarea></div>
+            <button class="btn-primary" onclick="submitDelivery()">Confirm Delivery</button>
+            <button class="btn-close" style="margin-left:12px;" onclick="closeDeliveryModal()">Cancel</button>
+            <p style="display:none; color:#f87171; margin-top:8px;" id="deliveryError"></p>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div class="modal-overlay" id="jobDetailModal">
+        <div class="modal-box">
+            <div class="modal-title" id="jobDetailTitle"></div>
+            <div id="jobDetailContent" style="font-size:14px; color:var(--text-secondary); line-height:1.6;"></div>
+            <button class="btn-close" onclick="closeJobDetailModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // ---------- SETTINGS (To be fetched from admin) ----------
+        let workerPayoutPercent = 70;
+        let deadlineDays = 5;       // default, admin can change
+
+        // ---------- STATE ----------
+        let currentBalance = 18200;
+        let totalIncome = 45000;
+        let activeJob = null;
+
+        const availableJobs = [
+            { id: 1, name: 'E-commerce Website', budget: 10000, domain: '.com', hosting: 'Shared (12 mo)', features: ['SEO', 'Payment Gateway'], deadlineDays: deadlineDays },
+            { id: 2, name: 'Business Landing Page', budget: 6000, domain: '.net', hosting: 'VPS (6 mo)', features: ['Multilingual'], deadlineDays: deadlineDays },
+        ];
+
+        // Approval check
+        const approvalStatus = document.getElementById('approvalStatus').innerText.trim();
+        if (approvalStatus === 'approved') {
+            document.getElementById('myjobApprovalMessage').style.display = 'none';
+            document.getElementById('myjobContent').style.display = 'block';
+        } else {
+            document.getElementById('myjobApprovalMessage').style.display = 'block';
+            document.getElementById('myjobContent').style.display = 'none';
+        }
+
+        // Tab switching
+        const navButtons = document.querySelectorAll('.nav-link[data-tab]');
+        const tabs = document.querySelectorAll('.tab-content');
+        function switchTab(tabName) {
+            navButtons.forEach(b => b.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+            const btn = document.querySelector(`.nav-link[data-tab="${tabName}"]`);
+            if (btn) btn.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById('mobileMenu').classList.remove('open');
+        }
+        navButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        document.querySelectorAll('#mobileMenu .nav-link[data-tab]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+        // ---------- AVAILABLE JOBS RENDERING ----------
+        function renderAvailableJobs() {
+            const container = document.getElementById('availableJobsContainer');
+            if (availableJobs.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary);">No jobs available right now.</p>';
+                return;
+            }
+            container.innerHTML = availableJobs.map(j => `
+                <div class="job-card">
+                    <div class="job-info">
+                        <div class="job-title">${j.name}</div>
+                        <div class="job-meta">Budget: ৳${j.budget.toLocaleString()} | ${j.domain} | ${j.hosting}</div>
+                        <div class="job-meta" style="margin-top:4px;">Deadline: ${j.deadlineDays} days</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-sm btn-view" onclick="viewJobDetails(${j.id})">View Details</button>
+                        <button class="btn-sm btn-accept" ${activeJob ? 'disabled' : ''} onclick="acceptJob(${j.id})">Accept Job</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ---------- VIEW JOB DETAILS MODAL ----------
+        function viewJobDetails(jobId) {
+            const job = availableJobs.find(j => j.id === jobId);
+            if (!job) return;
+            document.getElementById('jobDetailTitle').innerText = job.name;
+            document.getElementById('jobDetailContent').innerHTML = `
+                <p><strong>Budget:</strong> ৳${job.budget.toLocaleString()}</p>
+                <p><strong>Domain:</strong> ${job.domain}</p>
+                <p><strong>Hosting:</strong> ${job.hosting}</p>
+                <p><strong>Features:</strong> ${job.features.length ? job.features.join(', ') : 'None'}</p>
+                <p><strong>Deadline:</strong> ${job.deadlineDays} days</p>
+                <p style="color:var(--pink);">You will earn ৳${Math.round(job.budget * workerPayoutPercent / 100).toLocaleString()} (${workerPayoutPercent}%)</p>
+            `;
+            document.getElementById('jobDetailModal').classList.add('active');
+        }
+        function closeJobDetailModal() {
+            document.getElementById('jobDetailModal').classList.remove('active');
+        }
+
+        // ---------- ACTIVE JOB ----------
+        function renderActiveJob() {
+            const table = document.getElementById('activeJobTable');
+            const tbody = document.getElementById('activeJobBody');
+            const noMsg = document.getElementById('noActiveJobMsg');
+            if (!activeJob) {
+                table.style.display = 'none';
+                noMsg.style.display = 'block';
+                return;
+            }
+            table.style.display = '';
+            noMsg.style.display = 'none';
+            const remaining = getTimeRemaining(activeJob.deadline);
+            tbody.innerHTML = `
+                <tr>
+                    <td>#${activeJob.id}</td>
+                    <td class="product-col">${activeJob.product}</td>
+                    <td>৳${activeJob.amount.toLocaleString()}</td>
+                    <td><span class="status-badge status-assigned">Assigned</span></td>
+                    <td><span class="countdown" id="countdownDisplay">${remaining}</span></td>
+                    <td><button class="btn-sm btn-submit" onclick="openDeliveryModal()">Submit</button></td>
+                </tr>
+            `;
+            if (activeJob.timerInterval) clearInterval(activeJob.timerInterval);
+            activeJob.timerInterval = setInterval(() => {
+                const r = getTimeRemaining(activeJob.deadline);
+                const display = document.getElementById('countdownDisplay');
+                if (display) display.textContent = r;
+                if (r === 'Expired') {
+                    clearInterval(activeJob.timerInterval);
+                    releaseJob();
+                }
+            }, 1000);
+        }
+
+        function getTimeRemaining(deadline) {
+            const now = new Date().getTime();
+            const distance = deadline.getTime() - now;
+            if (distance <= 0) return 'Expired';
+            const days = Math.floor(distance / (1000*60*60*24));
+            const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+            const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+            const seconds = Math.floor((distance % (1000*60)) / 1000);
+            return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function acceptJob(jobId) {
+            if (activeJob) return;
+            const idx = availableJobs.findIndex(j => j.id === jobId);
+            if (idx === -1) return;
+            const job = availableJobs[idx];
+            const deadline = new Date(Date.now() + job.deadlineDays * 24 * 60 * 60 * 1000);
+            activeJob = { id: job.id, product: job.name, amount: job.budget, deadline, timerInterval: null };
+            availableJobs.splice(idx, 1);
+            renderAvailableJobs();
+            renderActiveJob();
+        }
+
+        function releaseJob() {
+            if (!activeJob) return;
+            const job = { id: activeJob.id, name: activeJob.product, budget: activeJob.amount, domain: '.com', hosting: 'shared', features: [], deadlineDays: deadlineDays };
+            availableJobs.push(job);
+            clearInterval(activeJob.timerInterval);
+            activeJob = null;
+            renderAvailableJobs();
+            renderActiveJob();
+        }
+
+        // ---------- DELIVERY ----------
+        function openDeliveryModal() { document.getElementById('deliveryModal').classList.add('active'); }
+        function closeDeliveryModal() { document.getElementById('deliveryModal').classList.remove('active'); }
+
+        function submitDelivery() {
+            const link = document.getElementById('deliveryLink').value.trim();
+            if (!link) {
+                document.getElementById('deliveryError').style.display='block';
+                document.getElementById('deliveryError').textContent='Website link is required.';
+                return;
+            }
+            const payout = Math.round((activeJob.amount * workerPayoutPercent) / 100);
+            currentBalance += payout;
+            totalIncome += payout;
+            document.getElementById('currentBalance').innerText = '৳' + currentBalance.toLocaleString();
+            document.getElementById('totalIncome').innerText = '৳' + totalIncome.toLocaleString();
+
+            alert(`Delivery submitted! You earned ৳${payout} (${workerPayoutPercent}% of ৳${activeJob.amount.toLocaleString()})`);
+            clearInterval(activeJob.timerInterval);
+            activeJob = null;
+            renderActiveJob();
+            renderAvailableJobs();
+            closeDeliveryModal();
+            document.getElementById('deliveryLink').value='';
+            document.getElementById('deliveryCredentials').value='';
+            document.getElementById('deliveryNotes').value='';
+        }
+
+        // ---------- PROFILE ----------
+        function toggleEditProfile() { document.getElementById('editProfileForm').style.display = document.getElementById('editProfileForm').style.display === 'none' ? 'block' : 'none'; }
+        function saveProfile() {
+            const phone = document.getElementById('editPhone').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const social = document.getElementById('editSocial').value.trim();
+            const photoUrl = document.getElementById('editPhotoUrl').value.trim();
+            if (phone) document.getElementById('displayPhone').innerText = phone;
+            if (email) document.getElementById('displayEmail').innerText = email;
+            if (social) { const el = document.getElementById('displaySocial'); el.href = social; el.innerText = social.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+            if (photoUrl) { const av = document.getElementById('workerAvatar'); av.style.backgroundImage = `url(${photoUrl})`; av.style.backgroundSize = 'cover'; av.innerText = ''; }
+            if (document.getElementById('editPassword').value) alert('Password updated (demo)');
+            toggleEditProfile();
+            alert('Profile updated!');
+        }
+
+        // ---------- WITHDRAW ----------
+        function submitWithdraw() {
+            const amount = document.getElementById('wAmount').value;
+            const mobile = document.getElementById('wMobile').value.trim();
+            const method = document.getElementById('wMethod').value;
+            const err = document.getElementById('wError');
+            if (!amount || amount < 1000) { err.style.display='block'; err.textContent='Min BDT 1,000'; return; }
+            if (!/^01[3-9]\d{8}$/.test(mobile)) { err.style.display='block'; err.textContent='Invalid mobile'; return; }
+            if (!method) { err.style.display='block'; err.textContent='Select method'; return; }
+            err.style.display='none';
+            alert(`Withdrawal request submitted!`);
+            document.getElementById('wAmount').value='';
+            document.getElementById('wMobile').value='';
+            document.getElementById('wMethod').value='';
+        }
+
+        function logout() { if(confirm('Logout?')) window.location.href='index.html'; }
+
+        // Update payout display
+        function updatePayoutDisplay() {
+            document.getElementById('workerPayoutPercent').innerText = workerPayoutPercent + '%';
+            document.getElementById('exampleEarning').innerText = (10000 * workerPayoutPercent / 100).toLocaleString();
+        }
+        updatePayoutDisplay();
+
+        // Initial render
+        renderAvailableJobs();
+        renderActiveJob();
+    </script>
+</body>
+</html>
