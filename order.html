@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Place Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b0a0f; --pink: #ec4899; --blue: #06b6d4; --text: #ffffff; --text-secondary: #94a3b8; --card-bg: #1a1a2e; --border: #1e293b; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .container { max-width: 760px; margin: 0 auto; padding: 40px 24px; }
+        .logo { text-align: center; font-size: 24px; font-weight: 800; margin-bottom: 28px; display: block; text-decoration: none; color: white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--pink); margin: 16px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: white; font-size: 15px; outline: none; font-family: inherit; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .check-group { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 6px; }
+        .check-group label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .price-tag { color: var(--blue); font-size: 14px; margin-left: 8px; }
+        .selected-product-box { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+        .product-highlight-name { font-size: 18px; font-weight: 600; }
+        .product-highlight-price { font-size: 22px; font-weight: 700; color: var(--pink); }
+        .btn-details { padding: 8px 20px; border: 1px solid var(--pink); border-radius: 8px; background: transparent; color: var(--pink); font-weight: 600; cursor: pointer; }
+        .total-box { margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .total-label { font-size: 16px; color: var(--text-secondary); }
+        .total-amount { font-size: 24px; font-weight: 700; color: var(--pink); }
+        .btn-submit { width: 100%; padding: 14px; margin-top: 12px; background: var(--pink); border: none; border-radius: 50px; color: white; font-weight: 700; font-size: 16px; cursor: pointer; }
+        .btn-submit:hover { background: #db2777; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 30px; max-width: 480px; width: 90%; }
+        .modal-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .modal-desc { color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
+        .demo-link { color: var(--blue); text-decoration: underline; }
+        .btn-close { margin-top: 16px; padding: 8px 22px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: white; cursor: pointer; font-family: inherit; }
+        @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+        <div class="glass-card" id="orderFormContainer">
+            <h2 style="font-size:24px; font-weight:700; margin-bottom:24px;">Place Your Order</h2>
+
+            <div class="section-title">Client Information</div>
+            <div class="two-col">
+                <div class="form-group"><label>Full Name *</label><input type="text" id="customerName" required></div>
+                <div class="form-group"><label>Phone Number *</label><input type="tel" id="customerPhone" required></div>
+            </div>
+            <div class="two-col">
+                <div class="form-group"><label>Email *</label><input type="email" id="customerEmail" required></div>
+                <div class="form-group"><label>Facebook Profile URL *</label><input type="url" id="facebookUrl" required></div>
+            </div>
+            <div class="form-group"><label>Address (optional)</label><input type="text" id="customerAddress"></div>
+
+            <div class="section-title">Selected Product</div>
+            <div class="selected-product-box">
+                <div><div class="product-highlight-name" id="selectedProductName">Choose a product</div></div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="product-highlight-price" id="selectedProductPrice">৳0</span>
+                    <button class="btn-details" id="viewDetailsBtn" disabled onclick="openProductModal()">View Details</button>
+                </div>
+            </div>
+            <select id="productSelect" style="display:none;"></select>
+
+            <div class="two-col">
+                <div class="form-group"><label>Domain Extension</label><select id="domainExt"><option value=".com">.com - BDT 1,390</option><option value=".xyz">.xyz - BDT 350</option><option value=".net">.net - BDT 1,200</option><option value=".org">.org - BDT 1,100</option></select><span class="price-tag" id="domainPrice">BDT 1,390</span></div>
+                <div class="form-group"><label>Hosting Type</label><select id="hostingType"><option value="shared">Shared</option><option value="vps">VPS</option><option value="dedicated">Dedicated</option></select></div>
+            </div>
+            <div class="form-group"><label>Hosting Duration</label><select id="hostingDuration"></select><span class="price-tag" id="hostingPrice"></span></div>
+            <div class="form-group"><label>Additional Features</label><div class="check-group"><label><input type="checkbox" value="SEO"> SEO</label><label><input type="checkbox" value="Payment Gateway"> Payment Gateway</label><label><input type="checkbox" value="Multilingual"> Multilingual</label></div></div>
+            <div class="form-group"><label>Target Pages (optional)</label><input type="text" id="targetPages"></div>
+            <div class="form-group"><label>Special Instructions</label><textarea id="specialInstructions" rows="3"></textarea></div>
+
+            <div class="total-box"><span class="total-label">Total Cost</span><span class="total-amount" id="totalCost">৳0</span></div>
+            <button class="btn-submit" onclick="submitOrder()">Submit Order</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-box">
+            <div class="modal-title" id="modalProductName"></div>
+            <div class="modal-desc" id="modalProductDesc"></div>
+            <p style="margin-bottom:8px;"><strong>Price:</strong> <span id="modalProductPrice" style="color:var(--pink);"></span></p>
+            <p><strong>Demo:</strong> <a href="#" target="_blank" id="modalDemoLink" class="demo-link">View Demo</a></p>
+            <button class="btn-close" onclick="closeProductModal()">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref') || 'UNKNOWN';
+        const productIdFromUrl = urlParams.get('product');
+        let products = [];
+        const domainPrices = { '.com':1390, '.xyz':350, '.net':1200, '.org':1100 }, hostingRates = { 'shared':100, 'vps':600, 'dedicated':1500 };
+
+        async function init() {
+            const { data } = await supabase.from('products').select('*').eq('status','active');
+            products = data || [];
+            const productSelect = document.getElementById('productSelect');
+            productSelect.innerHTML = '<option value="">Choose a product</option>' + products.map(p => `<option value="${p.id}">${p.name} - BDT ${(p.price||0).toLocaleString()}</option>`).join('');
+            if (productIdFromUrl) productSelect.value = productIdFromUrl;
+            refreshAll();
+        }
+
+        function updateSelectedDisplay() {
+            const p = products.find(pr => pr.id == document.getElementById('productSelect').value);
+            document.getElementById('selectedProductName').textContent = p ? p.name : 'Choose a product';
+            document.getElementById('selectedProductPrice').textContent = p ? '৳ ' + (p.price||0).toLocaleString() : '৳0';
+            document.getElementById('viewDetailsBtn').disabled = !p;
+        }
+        function openProductModal() {
+            const p = products.find(pr => pr.id == document.getElementById('productSelect').value);
+            if (!p) return;
+            document.getElementById('modalProductName').textContent = p.name;
+            document.getElementById('modalProductDesc').textContent = p.description || '';
+            document.getElementById('modalProductPrice').textContent = '৳ ' + (p.price||0).toLocaleString();
+            document.getElementById('modalDemoLink').href = p.demo_link || '#';
+            document.getElementById('productModal').classList.add('active');
+        }
+        function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
+
+        function updateHosting() {
+            const type = document.getElementById('hostingType').value;
+            const durSelect = document.getElementById('hostingDuration');
+            durSelect.innerHTML = [1,3,6,12].map(m => `<option value="${m}">${m} Month${m>1?'s':''} - BDT ${(hostingRates[type]*m).toLocaleString()}</option>`).join('');
+            updateHostingPrice();
+        }
+        function updateHostingPrice() {
+            const m = parseInt(document.getElementById('hostingDuration').value);
+            document.getElementById('hostingPrice').textContent = m ? `BDT ${(hostingRates[document.getElementById('hostingType').value]*m).toLocaleString()}` : '';
+        }
+        function updateDomainPrice() { document.getElementById('domainPrice').textContent = `BDT ${domainPrices[document.getElementById('domainExt').value].toLocaleString()}`; }
+
+        function calculateTotal() {
+            const p = products.find(pr => pr.id == document.getElementById('productSelect').value);
+            const pp = p ? (p.price||0) : 0;
+            const dp = domainPrices[document.getElementById('domainExt').value];
+            const m = parseInt(document.getElementById('hostingDuration').value);
+            const hp = m ? hostingRates[document.getElementById('hostingType').value] * m : 0;
+            document.getElementById('totalCost').textContent = `৳ ${(pp+dp+hp).toLocaleString()}`;
+        }
+
+        function refreshAll() { updateSelectedDisplay(); updateDomainPrice(); updateHosting(); calculateTotal(); }
+
+        document.getElementById('productSelect').addEventListener('change', refreshAll);
+        document.getElementById('domainExt').addEventListener('change', refreshAll);
+        document.getElementById('hostingType').addEventListener('change', refreshAll);
+        document.getElementById('hostingDuration').addEventListener('change', () => { updateHostingPrice(); calculateTotal(); });
+
+        async function submitOrder() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const fb = document.getElementById('facebookUrl').value.trim();
+            const pid = document.getElementById('productSelect').value;
+            if (!name || !phone || !email || !fb || !pid) return alert('Please fill all required fields.');
+            if (!/^01[3-9]\d{8}$/.test(phone)) return alert('Invalid phone number.');
+            await supabase.from('orders').insert([{
+                volunteer_referral_code: refCode,
+                customer_name: name, customer_phone: phone, customer_email: email, facebook_url: fb,
+                product_id: parseInt(pid), amount: parseInt(document.getElementById('totalCost').innerText.replace(/[^0-9]/g,'')),
+                domain_extension: document.getElementById('domainExt').value,
+                hosting_type: document.getElementById('hostingType').value,
+                hosting_duration: parseInt(document.getElementById('hostingDuration').value),
+                selected_features: Array.from(document.querySelectorAll('.check-group input:checked')).map(cb => cb.value),
+                status: 'pending'
+            }]);
+            alert('Order submitted successfully!');
+            window.location.href = 'index.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

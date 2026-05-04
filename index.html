@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Let's Build World Together</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b0a0f; --pink: #ec4899; --blue: #06b6d4; --text: #ffffff; --text-secondary: #a1a1aa; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .navbar { padding: 24px 0; background: rgba(11,10,15,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 10; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .logo { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; text-decoration: none; color: white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--pink); }
+        .btn-outline { padding: 8px 22px; border: 1px solid var(--pink); border-radius: 50px; color: var(--pink) !important; font-weight: 600; transition: 0.2s; }
+        .btn-outline:hover { background: rgba(236,72,153,0.1); }
+        .hero { min-height: 85vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .hero-content { max-width: 800px; }
+        .hero-badge { display: inline-block; padding: 6px 18px; border-radius: 50px; background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; font-size: 14px; font-weight: 600; margin-bottom: 28px; }
+        .hero-title { font-size: 64px; font-weight: 900; line-height: 1.1; margin-bottom: 24px; color: var(--text); }
+        .hero-subtitle { font-size: 18px; color: var(--text-secondary); margin-bottom: 42px; line-height: 1.6; }
+        .btn-primary { padding: 16px 42px; background: var(--pink); border: none; border-radius: 50px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-primary:hover { background: #db2777; }
+        .features { padding: 80px 0; }
+        .section-title { font-size: 34px; font-weight: 700; text-align: center; margin-bottom: 60px; color: var(--text); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 32px; }
+        .feature-card { background: #1a1a2e; border: 1px solid #1e293b; border-radius: 16px; padding: 36px 28px; text-align: center; transition: 0.2s; }
+        .feature-card:hover { border-color: var(--pink); }
+        .feature-icon { font-size: 44px; margin-bottom: 18px; }
+        .feature-title { font-size: 20px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+        .feature-desc { color: var(--text-secondary); line-height: 1.5; font-size: 14px; }
+        .footer { text-align: center; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #71717a; }
+        @media (max-width: 768px) { .hero-title { font-size: 40px; } .nav-links a:not(.btn-outline) { display: none; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="login.html" class="btn-outline">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🚀 Multi-Role Referral Platform</div>
+            <h1 class="hero-title">Let's Build World Together</h1>
+            <p class="hero-subtitle">Join a global community of volunteers and professionals. Share products, earn commissions, and deliver projects — all in one platform.</p>
+            <a href="login.html" class="btn-primary">Get Started</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Why CreedForge?</h2>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">🔗</div><h3 class="feature-title">Refer & Earn</h3><p class="feature-desc">Share your unique link and earn up to 20% commission on every sale.</p></div>
+                <div class="feature-card"><div class="feature-icon">💼</div><h3 class="feature-title">Work on Projects</h3><p class="feature-desc">Skilled workers get access to real client orders. Deliver and get paid.</p></div>
+                <div class="feature-card"><div class="feature-icon">🛡️</div><h3 class="feature-title">Secure Payments</h3><p class="feature-desc">All payments are held securely and released upon delivery approval.</p></div>
+                <div class="feature-card"><div class="feature-icon">📊</div><h3 class="feature-title">Real-Time Dashboard</h3><p class="feature-desc">Track your balance, commissions, and order status in one place.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container"><p>&copy; 2026 CreedForge. Built for the community.</p></div>
+    </footer>
+</body>
+</html>

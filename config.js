@@ -1,0 +1,3 @@
+// config.js - Supabase Configuration
+const SUPABASE_URL = "https://svqlcgopcercyzfvdfra.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2cWxjZ29wY2VyY3l6ZnZkZnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4OTk4NTQsImV4cCI6MjA5MzQ3NTg1NH0.D29O3ScZi5y0HmMLsAnlnpYjRnqz6q39-vQ8v0_2y7A";

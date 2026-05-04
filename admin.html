@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b0a0f; --pink: #ec4899; --blue: #06b6d4; --text: #ffffff; --text-secondary: #94a3b8; --card-bg: #1a1a2e; --border: #1e293b; --navbar-height: 70px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        .navbar { background:#0f0f1a; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; height:var(--navbar-height); display:flex; align-items:center; }
+        .navbar-container { max-width:1200px; margin:0 auto; width:100%; padding:0 24px; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:24px; font-weight:800; letter-spacing:-0.5px; text-decoration:none; color:white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .nav-links { display:flex; align-items:center; gap:8px; }
+        .nav-link { padding:10px 16px; border-radius:8px; color:var(--text-secondary); font-weight:500; cursor:pointer; transition:0.2s; font-size:15px; background:transparent; border:none; font-family:inherit; }
+        .nav-link:hover { background:rgba(255,255,255,0.05); color:white; }
+        .nav-link.active { background:rgba(236,72,153,0.15); color:var(--pink); }
+        .btn-logout { padding:10px 16px; border:1px solid var(--border); border-radius:8px; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:500; font-size:14px; transition:0.2s; font-family:inherit; margin-left:8px; }
+        .btn-logout:hover { border-color:var(--pink); color:var(--pink); }
+        .menu-toggle { display:none; background:transparent; border:1px solid var(--border); color:white; font-size:20px; cursor:pointer; padding:8px 12px; border-radius:8px; }
+        .mobile-menu { display:none; position:absolute; top:var(--navbar-height); left:0; right:0; background:#0f0f1a; border-bottom:1px solid var(--border); flex-direction:column; padding:16px 24px; gap:8px; z-index:49; }
+        .mobile-menu.open { display:flex; }
+        .main-content { max-width:1200px; margin:0 auto; padding:40px 24px; }
+        .tab-content { display:none; } .tab-content.active { display:block; }
+        .page-title { font-size:26px; font-weight:700; margin-bottom:28px; color:var(--text); }
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-bottom:28px; }
+        .stat-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:22px 20px; }
+        .stat-label { font-size:13px; color:var(--text-secondary); margin-bottom:6px; }
+        .stat-value { font-size:26px; font-weight:700; color:var(--text); }
+        .stat-value.pink { color:var(--pink); }
+        .glass-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+        .card-title { font-size:16px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 8px; }
+        .entity-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:10px; transition:0.2s; }
+        .entity-card:hover { border-color:var(--pink); }
+        .entity-card-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }
+        .entity-card-label { font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; min-width:70px; }
+        .entity-card-value { font-size:14px; font-weight:600; color:var(--text); word-break:break-word; text-align:right; flex:1; }
+        .status-badge { display:inline-block; padding:3px 12px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+        .status-pending { background:rgba(245,158,11,0.15); color:#fbbf24; }
+        .status-approved { background:rgba(16,185,129,0.15); color:#34d399; }
+        .btn-sm { padding:5px 12px; border-radius:6px; font-weight:500; cursor:pointer; font-size:11px; transition:0.2s; border:none; margin-right:6px; font-family:inherit; }
+        .btn-approve { background:var(--pink); color:white; } .btn-reject { background:transparent; border:1px solid var(--border); color:var(--text-secondary); }
+        .btn-primary { padding:10px 24px; background:var(--pink); border:none; border-radius:8px; color:white; font-weight:600; cursor:pointer; font-size:14px; }
+        .form-group { margin-bottom:16px; } .form-group label { display:block; margin-bottom:6px; color:var(--text-secondary); font-size:13px; }
+        .form-group input, .form-group textarea, .form-group select { width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; color:white; outline:none; font-family:inherit; }
+        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:100; justify-content:center; align-items:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-box { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:30px; max-width:700px; width:90%; max-height:85vh; overflow-y:auto; }
+        .modal-title { font-size:22px; font-weight:700; margin-bottom:12px; }
+        .btn-close { margin-top:16px; padding:8px 22px; border:1px solid var(--border); border-radius:6px; background:transparent; color:white; cursor:pointer; }
+        @media (max-width:768px) { .nav-links { display:none; } .menu-toggle { display:block; } .mobile-menu .nav-link, .mobile-menu .btn-logout { width:100%; text-align:left; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+            <div class="nav-links">
+                <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-link" data-tab="volunteers">Volunteers</button>
+                <button class="nav-link" data-tab="workers">Workers</button>
+                <button class="nav-link" data-tab="orders">Orders</button>
+                <button class="nav-link" data-tab="deliveries">Deliveries</button>
+                <button class="nav-link" data-tab="products">Products</button>
+                <button class="nav-link" data-tab="withdrawals">Withdrawals</button>
+                <button class="nav-link" data-tab="settings">Settings</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="nav-link active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-link" data-tab="volunteers">Volunteers</button>
+            <button class="nav-link" data-tab="workers">Workers</button>
+            <button class="nav-link" data-tab="orders">Orders</button>
+            <button class="nav-link" data-tab="deliveries">Deliveries</button>
+            <button class="nav-link" data-tab="products">Products</button>
+            <button class="nav-link" data-tab="withdrawals">Withdrawals</button>
+            <button class="nav-link" data-tab="settings">Settings</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div id="dashboardTab" class="tab-content active">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <div class="stats-grid" id="statsContainer">Loading...</div>
+        </div>
+        <div id="volunteersTab" class="tab-content"><h1 class="page-title">Volunteers</h1><div class="card-grid" id="volunteerGrid"></div></div>
+        <div id="workersTab" class="tab-content"><h1 class="page-title">Workers</h1><div class="card-grid" id="workerGrid"></div></div>
+        <div id="ordersTab" class="tab-content"><h1 class="page-title">Client Orders</h1><div class="card-grid" id="orderGrid"></div></div>
+        <div id="deliveriesTab" class="tab-content"><h1 class="page-title">Pending Deliveries</h1><div class="card-grid" id="deliveryGrid"></div></div>
+        <div id="productsTab" class="tab-content"><h1 class="page-title">Products</h1><button class="btn-primary" style="margin-bottom:20px;" onclick="openAddProductModal()">+ Add Product</button><div class="card-grid" id="productGrid"></div></div>
+        <div id="withdrawalsTab" class="tab-content"><h1 class="page-title">Withdrawals</h1><div class="card-grid" id="withdrawalGrid"></div></div>
+        <div id="settingsTab" class="tab-content"><h1 class="page-title">Settings</h1>
+            <div class="glass-card" style="max-width:500px;">
+                <div class="form-group"><label>Self Commission (%)</label><input type="number" id="selfCommission" value="20"></div>
+                <div class="form-group"><label>Upline Commission (%)</label><input type="number" id="uplineCommission" value="5"></div>
+                <div class="form-group"><label>Worker Payout (%)</label><input type="number" id="workerPayout" value="70"></div>
+                <div class="form-group"><label>Default Deadline (days)</label><input type="number" id="defaultDeadline" value="5"></div>
+                <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="orderDetailModal"><div class="modal-box"><div class="modal-title">Order Details</div><div id="orderDetailContent"></div><button class="btn-close" onclick="closeOrderDetailModal()">Close</button></div></div>
+    <div class="modal-overlay" id="deliveryDetailModal"><div class="modal-box"><div class="modal-title">Delivery Details</div><div id="deliveryDetailContent"></div><div style="margin-top:20px; display:flex; gap:12px;"><button class="btn-primary" id="modalApproveBtn">Approve</button><button class="btn-reject" id="modalRevisionBtn" style="padding:8px 22px; border:1px solid var(--border); border-radius:6px; background:transparent; color:white;">Request Revision</button></div><button class="btn-close" style="margin-top:12px;" onclick="closeDeliveryDetailModal()">Close</button></div></div>
+    <div class="modal-overlay" id="productModal"><div class="modal-box"><div class="modal-title" id="productModalTitle">Add Product</div>
+        <div class="form-group"><label>Name</label><input type="text" id="prodName"></div>
+        <div class="form-group"><label>Short Description</label><textarea id="prodDesc" rows="2"></textarea></div>
+        <div class="form-group"><label>Price (BDT)</label><input type="number" id="prodPrice"></div>
+        <div class="form-group"><label>Image URL</label><input type="url" id="prodImage"></div>
+        <div class="form-group"><label>Demo Link</label><input type="url" id="prodDemo"></div>
+        <div class="form-group"><label>Category</label><input type="text" id="prodCategory"></div>
+        <div class="form-group"><label>Status</label><select id="prodStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <input type="hidden" id="editingProductId">
+        <button class="btn-primary" onclick="saveProduct()">Save</button>
+        <button class="btn-close" onclick="closeProductModal()">Cancel</button>
+    </div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script>
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) { window.location.href = 'login.html'; return; }
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            if (!profile || profile.role !== 'admin') { alert('Access denied.'); return; }
+
+            const [{ data: volunteers }, { data: workers }, { data: orders }, { data: deliveries }, { data: products }, { data: withdrawals }, { data: settings }] = await Promise.all([
+                supabase.from('profiles').select('*').eq('role','volunteer'),
+                supabase.from('profiles').select('*').eq('role','worker'),
+                supabase.from('orders').select('*'),
+                supabase.from('orders').select('*').eq('status','worker_delivered'),
+                supabase.from('products').select('*'),
+                supabase.from('withdrawals').select('*').eq('status','pending'),
+                supabase.from('settings').select('*').single()
+            ]);
+
+            document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-card"><div class="stat-label">Total Volunteers</div><div class="stat-value">${volunteers.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Total Workers</div><div class="stat-value">${workers.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value">${orders.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Pending Deliveries</div><div class="stat-value">${deliveries.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Pending Withdrawals</div><div class="stat-value">${withdrawals.length}</div></div>
+                <div class="stat-card"><div class="stat-label">Products</div><div class="stat-value">${products.length}</div></div>
+            `;
+
+            document.getElementById('selfCommission').value = settings?.self_commission || 20;
+            document.getElementById('uplineCommission').value = settings?.upline_commission || 5;
+            document.getElementById('workerPayout').value = settings?.worker_payout || 70;
+            document.getElementById('defaultDeadline').value = settings?.default_deadline || 5;
+
+            renderCards('volunteerGrid', volunteers, (v) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Name</span><span class="entity-card-value">${v.name}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Email</span><span class="entity-card-value">${v.email||'—'}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Status</span><span class="status-badge ${v.approval_status==='approved'?'status-approved':'status-pending'}">${v.approval_status}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        ${v.approval_status==='pending' ? `<button class="btn-sm btn-approve" onclick="approveUser('${v.id}')">Approve</button>` : ''}
+                    </div>
+                </div>
+            `);
+            renderCards('workerGrid', workers, (w) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Name</span><span class="entity-card-value">${w.name}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Status</span><span class="status-badge ${w.approval_status==='approved'?'status-approved':'status-pending'}">${w.approval_status}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        ${w.approval_status==='pending' ? `<button class="btn-sm btn-approve" onclick="approveUser('${w.id}')">Approve</button>` : ''}
+                    </div>
+                </div>
+            `);
+            renderCards('orderGrid', orders, (o) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Order</span><span class="entity-card-value">#${o.id}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Status</span><span class="status-badge">${o.status}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        <button class="btn-sm btn-approve" onclick="viewOrder('${o.id}')">View</button>
+                        ${o.status==='pending' ? `<button class="btn-sm btn-approve" onclick="approveOrder('${o.id}')">Approve</button>` : ''}
+                    </div>
+                </div>
+            `);
+            renderCards('deliveryGrid', deliveries, (d) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Order</span><span class="entity-card-value">#${d.id}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Worker</span><span class="entity-card-value">${d.assigned_worker_id||'—'}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        <button class="btn-sm btn-approve" onclick="viewDelivery('${d.id}')">View</button>
+                        <button class="btn-sm btn-approve" onclick="approveDelivery('${d.id}')">Approve</button>
+                    </div>
+                </div>
+            `);
+            renderCards('productGrid', products, (p) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Name</span><span class="entity-card-value">${p.name}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Price</span><span class="entity-card-value">৳${p.price?.toLocaleString()}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        <button class="btn-sm btn-approve" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="btn-sm btn-reject" onclick="deleteProduct(${p.id})">Delete</button>
+                    </div>
+                </div>
+            `);
+            renderCards('withdrawalGrid', withdrawals, (w) => `
+                <div class="entity-card">
+                    <div class="entity-card-row"><span class="entity-card-label">Amount</span><span class="entity-card-value">৳${w.amount?.toLocaleString()}</span></div>
+                    <div class="entity-card-row"><span class="entity-card-label">Method</span><span class="entity-card-value">${w.payment_method}</span></div>
+                    <div class="entity-card-row" style="justify-content:flex-end;">
+                        <button class="btn-sm btn-approve" onclick="approveWithdrawal('${w.id}')">Approve</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function renderCards(id, data, fn) {
+            document.getElementById(id).innerHTML = data.map(fn).join('');
+        }
+
+        async function approveUser(id) {
+            await supabase.from('profiles').update({ approval_status: 'approved' }).eq('id', id);
+            alert('Approved!');
+        }
+        async function approveOrder(id) {
+            await supabase.from('orders').update({ status: 'approved_for_worker' }).eq('id', id);
+            alert('Order approved!');
+        }
+        async function approveDelivery(id) {
+            const { data: order } = await supabase.from('orders').select('volunteer_referral_code, amount').eq('id', id).single();
+            if (order) {
+                const volunteer = await supabase.from('profiles').select('id, balance, total_earned').eq('referral_code', order.volunteer_referral_code).single();
+                if (volunteer.data) {
+                    const commission = Math.round(order.amount * 20 / 100);
+                    await supabase.from('profiles').update({ balance: (volunteer.data.balance||0) + commission, total_earned: (volunteer.data.total_earned||0) + commission }).eq('id', volunteer.data.id);
+                }
+            }
+            await supabase.from('orders').update({ status: 'completed' }).eq('id', id);
+            alert('Delivery approved & commission paid!');
+        }
+        async function approveWithdrawal(id) {
+            await supabase.from('withdrawals').update({ status: 'approved' }).eq('id', id);
+            alert('Withdrawal approved!');
+        }
+        function viewOrder(id) {
+            alert('Order #' + id + ' details (modal in full version)');
+        }
+        function viewDelivery(id) {
+            alert('Delivery #' + id + ' details (modal in full version)');
+        }
+        async function saveSettings() {
+            await supabase.from('settings').upsert({
+                id: 1,
+                self_commission: parseInt(document.getElementById('selfCommission').value),
+                upline_commission: parseInt(document.getElementById('uplineCommission').value),
+                worker_payout: parseInt(document.getElementById('workerPayout').value),
+                default_deadline: parseInt(document.getElementById('defaultDeadline').value)
+            });
+            alert('Settings saved!');
+        }
+
+        function openAddProductModal() { document.getElementById('productModal').classList.add('active'); }
+        function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
+        async function saveProduct() {
+            const product = { name: document.getElementById('prodName').value, price: parseInt(document.getElementById('prodPrice').value), description: document.getElementById('prodDesc').value, image_url: document.getElementById('prodImage').value, demo_link: document.getElementById('prodDemo').value, category: document.getElementById('prodCategory').value, status: document.getElementById('prodStatus').value };
+            await supabase.from('products').insert([product]);
+            alert('Product added!');
+            closeProductModal();
+        }
+        async function deleteProduct(id) { if (confirm('Delete?')) { await supabase.from('products').delete().eq('id', id); alert('Deleted!'); } }
+
+        const navButtons = document.querySelectorAll('.nav-link[data-tab]');
+        const tabs = document.querySelectorAll('.tab-content');
+        function switchTab(tabName) {
+            navButtons.forEach(b => b.classList.remove('active'));
+            tabs.forEach(t => t.classList.remove('active'));
+            const btn = document.querySelector(`.nav-link[data-tab="${tabName}"]`);
+            if (btn) btn.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+        navButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+
+        async function logout() { await supabase.auth.signOut(); window.location.href = 'index.html'; }
+        init();
+    </script>
+</body>
+</html>

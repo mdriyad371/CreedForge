@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreedForge - Login / Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b0a0f; --pink: #ec4899; --blue: #06b6d4; --text: #ffffff; --text-secondary: #94a3b8; --border: #1e293b; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card { background: #1a1a2e; border: 1px solid var(--border); border-radius: 24px; padding: 40px; width: 100%; max-width: 420px; margin: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .logo { font-size: 26px; font-weight: 800; text-decoration: none; display: block; text-align: center; margin-bottom: 32px; letter-spacing: -0.5px; color: white; }
+        .logo-highlight { background: linear-gradient(135deg, #ec4899, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 50px; padding: 4px; margin-bottom: 28px; }
+        .toggle-btn { flex:1; padding: 10px 0; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-secondary); font-size: 15px; }
+        .toggle-btn.active { background: var(--pink); color: white; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: white; outline: none; font-size: 15px; }
+        .form-group input:focus { border-color: var(--pink); }
+        .role-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        .role-btn { flex:1; padding: 8px 0; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text-secondary); cursor: pointer; font-weight: 500; font-size: 14px; }
+        .role-btn.active-role { background: rgba(236,72,153,0.15); border-color: var(--pink); color: var(--pink); }
+        .submit-btn { width: 100%; padding: 14px; background: var(--pink); border: none; border-radius: 50px; color: white; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .submit-btn:hover { background: #db2777; }
+        .hidden { display: none !important; }
+        .back-link { text-align: center; margin-top: 18px; font-size: 13px; }
+        .back-link a { color: var(--text-secondary); text-decoration: none; } .back-link a:hover { color: var(--pink); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <a href="index.html" class="logo">⚡ Creed<span class="logo-highlight">Forge</span></a>
+        <div class="toggle">
+            <button id="loginToggleBtn" class="toggle-btn active">Login</button>
+            <button id="signupToggleBtn" class="toggle-btn">Sign Up</button>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="Enter your email" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password" required></div>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+        <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+            <div class="form-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Your name" required></div>
+            <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com" required></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="signupPhone" placeholder="01XXXXXXXXX" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Create a password" required></div>
+            <label style="font-size:13px; color:var(--text-secondary); margin-bottom:8px; display:block;">I want to join as</label>
+            <div class="role-toggle">
+                <button type="button" class="role-btn active-role" onclick="selectRole('volunteer', this)">Volunteer</button>
+                <button type="button" class="role-btn" onclick="selectRole('worker', this)">Worker</button>
+            </div>
+            <input type="hidden" id="signupRole" value="volunteer">
+            <div class="form-group"><label>Social Media Link</label><input type="url" id="signupSocial" placeholder="https://facebook.com/yourprofile" required></div>
+            <button type="submit" class="submit-btn">Create Account</button>
+        </form>
+        <div class="back-link"><a href="index.html">← Back to Home</a></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script>
+        const loginToggle = document.getElementById('loginToggleBtn');
+        const signupToggle = document.getElementById('signupToggleBtn');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        loginToggle.addEventListener('click', () => {
+            loginToggle.classList.add('active');
+            signupToggle.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+        });
+        signupToggle.addEventListener('click', () => {
+            signupToggle.classList.add('active');
+            loginToggle.classList.remove('active');
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+        });
+        function selectRole(role, btn) {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active-role'));
+            btn.classList.add('active-role');
+            document.getElementById('signupRole').value = role;
+        }
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) { alert('Login failed: ' + error.message); return; }
+            const { data: profile } = await supabase.from('profiles').select('role, approval_status').eq('id', data.user.id).single();
+            if (!profile) { alert('Profile not found.'); await supabase.auth.signOut(); return; }
+            if (profile.approval_status !== 'approved') { alert('Account pending approval.'); await supabase.auth.signOut(); return; }
+            if (profile.role === 'admin') window.location.href = 'admin.html';
+            else if (profile.role === 'worker') window.location.href = 'worker-dashboard.html';
+            else window.location.href = 'volunteer-dashboard.html';
+        }
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const role = document.getElementById('signupRole').value;
+            const social = document.getElementById('signupSocial').value.trim();
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) { alert('Signup failed: ' + error.message); return; }
+            if (data.user) {
+                await supabase.from('profiles').insert([{ id: data.user.id, name, phone, role, social_media_url: social, approval_status: 'pending' }]);
+                alert('Account created! Wait for admin approval.');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
