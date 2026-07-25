@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ক্যাটাগরি - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --accent:      #e94560;
+            --accent-dark: #c92c48;
+            --accent-soft: #fdeef1;
+            --border:      #ecedf5;
+            --text:        #16162c;
+            --text-soft:   #6b6b85;
+            --text-faint:  #a1a1b8;
+            --bg:          #f5f6fb;
+            --surface:     #ffffff;
+            --radius-md:   14px;
+            --shadow-card: 0 4px 16px rgba(21,21,44,0.08);
+            --font-display: 'Baloo Da 2', 'Hind Siliguri', sans-serif;
+            --font-body: 'Hind Siliguri', 'Segoe UI', sans-serif;
+        }
+
+        body.dark-mode{
+            --border:  #2a2a4e;
+            --text:    #f2f2f7;
+            --text-soft: #a3a3c2;
+            --text-faint: #6f6f92;
+            --bg:      #0e0e1a;
+            --surface: #1a1a2e;
+            --accent-soft: rgba(233,69,96,0.14);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        body {
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: var(--surface);
+            border-radius: 32px;
+            box-shadow: 0 24px 70px rgba(21,21,44,0.28);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px 10px 16px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        .top-bar .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
+        .top-bar .logo i { font-size: 22px; color: var(--accent); }
+        .top-bar .logo h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text); }
+        .top-bar .logo h2 span { color: var(--accent); }
+        .top-bar .logo small { font-size: 8px; color: var(--text-faint); font-weight: 500; display: block; margin-top: -2px; }
+
+        .top-bar .right-icons { display: flex; gap: 16px; font-size: 17px; color: var(--text); }
+        .top-bar .right-icons i { cursor: pointer; transition: 0.2s; }
+        .top-bar .right-icons i:hover { color: var(--accent); }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px 90px 16px;
+            background: var(--bg);
+            transition: 0.3s;
+        }
+        .page-content::-webkit-scrollbar { width: 0; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0 14px 0;
+        }
+
+        .header h2 {
+            font-family: var(--font-display);
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .header i {
+            font-size: 16px;
+            color: var(--text);
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .category-layout {
+            display: flex;
+            gap: 12px;
+            height: calc(100% - 50px);
+        }
+
+        .category-sidebar {
+            width: 98px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 8px 0;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            height: fit-content;
+        }
+
+        .cat-main-item {
+            padding: 11px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .cat-main-item.active {
+            color: var(--accent-dark);
+            border-left-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .cat-main-item:hover:not(.active) { background: var(--bg); }
+
+        .subcategory-area {
+            flex: 1;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow-y: auto;
+        }
+
+        .subcategory-area h4 {
+            font-family: var(--font-display);
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .subcategory-area h4 i { color: var(--accent); font-size: 12.5px; }
+
+        .sub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+
+        .sub-item {
+            background: var(--bg);
+            padding: 14px 8px 10px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .sub-item:hover {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .sub-item:active { transform: scale(0.97); }
+
+        .sub-item i {
+            display: block;
+            font-size: 21px;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .sub-item:hover i { color: #fff; }
+
+        .bottom-nav {
+            flex-shrink: 0;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-faint);
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item i { font-size: 19px; margin-bottom: 3px; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item:hover { color: var(--accent); }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="alert('সার্চ খোলা হবে')"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="header">
+                <h2>ক্যাটাগরি</h2>
+                <i class="fas fa-sliders-h" onclick="alert('ফিল্টার')"></i>
+            </div>
+
+            <div class="category-layout">
+                <div class="category-sidebar">
+                    <div class="cat-main-item active" onclick="selectCategory(this, 'web')">ওয়েবসাইট</div>
+                    <div class="cat-main-item" onclick="selectCategory(this, 'app')">মোবাইল অ্যাপ</div>
+                    <div class="cat-main-item" onclick="selectCategory(this, 'graphics')">গ্রাফিক্স</div>
+                    <div class="cat-main-item" onclick="selectCategory(this, 'writing')">রাইটিং</div>
+                    <div class="cat-main-item" onclick="selectCategory(this, 'marketing')">মার্কেটিং</div>
+                </div>
+
+                <div class="subcategory-area" id="subArea">
+                    <h4><i class="fas fa-fire"></i> সাব-ক্যাটাগরি</h4>
+                    <div class="sub-grid" id="subGrid">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item active">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const categoryData = {
+            web: {
+                name: 'ওয়েবসাইট',
+                subs: [
+                    { name: 'ই-কমার্স', icon: 'fa-shopping-cart' },
+                    { name: 'পোর্টফোলিও', icon: 'fa-briefcase' },
+                    { name: 'ব্লগ', icon: 'fa-blog' },
+                    { name: 'ড্যাশবোর্ড', icon: 'fa-chart-line' },
+                    { name: 'ল্যান্ডিং পেজ', icon: 'fa-rocket' },
+                    { name: 'সোশ্যাল নেটওয়ার্ক', icon: 'fa-users' }
+                ]
+            },
+            app: {
+                name: 'মোবাইল অ্যাপ',
+                subs: [
+                    { name: 'ফুড ডেলিভারি', icon: 'fa-utensils' },
+                    { name: 'রাইড শেয়ারিং', icon: 'fa-car' },
+                    { name: 'ই-কমার্স', icon: 'fa-shopping-bag' },
+                    { name: 'হেলথ', icon: 'fa-heartbeat' },
+                    { name: 'এডুকেশন', icon: 'fa-graduation-cap' }
+                ]
+            },
+            graphics: {
+                name: 'গ্রাফিক্স',
+                subs: [
+                    { name: 'লোগো ডিজাইন', icon: 'fa-pen-fancy' },
+                    { name: 'ব্র্যান্ডিং', icon: 'fa-paint-brush' },
+                    { name: 'সোশ্যাল মিডিয়া', icon: 'fa-image' },
+                    { name: 'প্যাকেজিং', icon: 'fa-box' }
+                ]
+            },
+            writing: {
+                name: 'রাইটিং',
+                subs: [
+                    { name: 'কন্টেন্ট রাইটিং', icon: 'fa-pen' },
+                    { name: 'কপিরাইটিং', icon: 'fa-bullhorn' },
+                    { name: 'টেকনিক্যাল', icon: 'fa-code' },
+                    { name: 'ব্লগ পোস্ট', icon: 'fa-newspaper' }
+                ]
+            },
+            marketing: {
+                name: 'মার্কেটিং',
+                subs: [
+                    { name: 'SEO', icon: 'fa-chart-simple' },
+                    { name: 'সোশ্যাল মিডিয়া', icon: 'fa-share-alt' },
+                    { name: 'ইমেইল মার্কেটিং', icon: 'fa-envelope' },
+                    { name: 'পেইড অ্যাড', icon: 'fa-ad' }
+                ]
+            }
+        };
+
+        function selectCategory(element, key) {
+            document.querySelectorAll('.cat-main-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            const data = categoryData[key];
+            if (!data) return;
+
+            const grid = document.getElementById('subGrid');
+            grid.innerHTML = '';
+
+            data.subs.forEach(sub => {
+                const div = document.createElement('div');
+                div.className = 'sub-item';
+                div.innerHTML = `<i class="fas ${sub.icon}"></i> ${sub.name}`;
+                div.onclick = function() {
+                    location.href = 'category-projects.html?category=' + key + '&sub=' + sub.name;
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+
+            const defaultCat = document.querySelector('.cat-main-item.active');
+            if (defaultCat) {
+                const key = defaultCat.getAttribute('onclick').match(/'([^']+)'/)[1];
+                selectCategory(defaultCat, key);
+            }
+        });
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>

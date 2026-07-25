@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>প্রোফাইল এডিট - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 8px 15px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .top-bar .logo i {
+            font-size: 24px;
+            color: #e94560;
+        }
+
+        .top-bar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .top-bar .logo h2 span {
+            color: #e94560;
+        }
+
+        .top-bar .logo small {
+            font-size: 8px;
+            color: #888;
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .top-bar .right-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .top-bar .right-icons i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .top-bar .right-icons i:hover {
+            color: #e94560;
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 15px 80px 15px;
+            background: #fafafa;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 12px 0;
+        }
+
+        .back-header i {
+            font-size: 20px;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+
+        .back-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .profile-photo-section {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .profile-photo-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #e94560;
+            object-fit: cover;
+        }
+
+        .profile-photo-section .change-photo-btn {
+            display: block;
+            margin-top: 6px;
+            color: #e94560;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .profile-photo-section .change-photo-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 3px;
+        }
+
+        .form-group label .required {
+            color: #e94560;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #e94560;
+        }
+
+        .form-group textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .form-group .helper {
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-save {
+            width: 100%;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 4px;
+        }
+
+        .btn-save:hover {
+            background: #c0392b;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #e94560;
+        }
+
+        .nav-item:hover {
+            color: #e94560;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="alert('সার্চ খোলা হবে')"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="back-header">
+                <i class="fas fa-arrow-left" onclick="history.back()"></i>
+                <h3>✏️ প্রোফাইল এডিট</h3>
+            </div>
+
+            <div class="profile-photo-section">
+                <img src="https://via.placeholder.com/100" alt="Profile" id="profileImage" />
+                <span class="change-photo-btn" onclick="document.getElementById('photoInput').click()">
+                    <i class="fas fa-camera"></i> ফটো পরিবর্তন করুন
+                </span>
+                <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="changePhoto(this)" />
+            </div>
+
+            <form id="profileEditForm" onsubmit="saveProfile(event)">
+                <div class="form-group">
+                    <label>পূর্ণ নাম <span class="required">*</span></label>
+                    <input type="text" value="মোঃ রাহিম মিয়া" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ইমেইল <span class="required">*</span></label>
+                        <input type="email" value="rahim@email.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>ফোন নম্বর</label>
+                        <input type="tel" value="+880 1712-345678" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>ঠিকানা</label>
+                    <input type="text" placeholder="আপনার ঠিকানা" value="ঢাকা, বাংলাদেশ" />
+                </div>
+
+                <div class="form-group">
+                    <label>জীবনী</label>
+                    <textarea placeholder="আপনার সম্পর্কে কিছু বলুন...">আমি একজন ফ্রিল্যান্সার ক্লায়েন্ট। আমি ওয়েব ডেভেলপমেন্ট, অ্যাপ ডেভেলপমেন্ট এবং ডিজাইন প্রজেক্টে কাজ করি।</textarea>
+                    <div class="helper">সর্বোচ্চ ২০০ অক্ষর</div>
+                </div>
+
+                <div class="form-group">
+                    <label>পছন্দের ভাষা</label>
+                    <select>
+                        <option value="bn" selected>বাংলা</option>
+                        <option value="en">English</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>বর্তমান পাসওয়ার্ড <span class="required">*</span></label>
+                    <input type="password" placeholder="বর্তমান পাসওয়ার্ড দিন" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>নতুন পাসওয়ার্ড</label>
+                        <input type="password" placeholder="নতুন পাসওয়ার্ড" />
+                    </div>
+                    <div class="form-group">
+                        <label>নতুন পাসওয়ার্ড (পুনরায়)</label>
+                        <input type="password" placeholder="আবার লিখুন" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> সংরক্ষণ করুন
+                </button>
+            </form>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function changePhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            const form = document.getElementById('profileEditForm');
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+
+            if (!name || !email || !password) {
+                alert('দয়া করে সকল প্রয়োজনীয় ফিল্ড পূরণ করুন!');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!');
+                return;
+            }
+
+            alert('✅ আপনার প্রোফাইল সফলভাবে আপডেট হয়েছে!');
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userEmail', email);
+            location.href = 'profile.html';
+        }
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>
