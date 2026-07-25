@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>নোটিফিকেশন - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        body.dark-mode {
+            background: #0f0f1a;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .app-container {
+            background: #1a1a2e;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 8px 15px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .top-bar {
+            background: #1a1a2e;
+            border-bottom-color: #2a2a4e;
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .top-bar .logo i {
+            font-size: 24px;
+            color: #e94560;
+        }
+
+        .top-bar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .top-bar .logo h2 {
+            color: #fff;
+        }
+
+        .top-bar .logo h2 span {
+            color: #e94560;
+        }
+
+        .top-bar .logo small {
+            font-size: 8px;
+            color: #888;
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        body.dark-mode .top-bar .logo small {
+            color: #666;
+        }
+
+        .top-bar .right-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        body.dark-mode .top-bar .right-icons {
+            color: #fff;
+        }
+
+        .top-bar .right-icons i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .top-bar .right-icons i:hover {
+            color: #e94560;
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 15px 80px 15px;
+            background: #fafafa;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .page-content {
+            background: #16213e;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 12px 0;
+        }
+
+        .back-header i {
+            font-size: 20px;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .back-header i {
+            color: #fff;
+        }
+
+        .back-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .back-header h3 {
+            color: #fff;
+        }
+
+        .back-header .mark-all {
+            font-size: 12px;
+            color: #e94560;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .back-header .mark-all:hover {
+            text-decoration: underline;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .notification-item {
+            background: #1a1a2e;
+            border-color: #2a2a4e;
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid #e94560;
+        }
+
+        body.dark-mode .notification-item.unread {
+            border-left-color: #e94560;
+        }
+
+        .notification-item .icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .notification-item .icon.primary {
+            background: #fef0f2;
+            color: #e94560;
+        }
+
+        body.dark-mode .notification-item .icon.primary {
+            background: #2a1a2e;
+        }
+
+        .notification-item .icon.success {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        body.dark-mode .notification-item .icon.success {
+            background: #1a2a1e;
+        }
+
+        .notification-item .icon.warning {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        body.dark-mode .notification-item .icon.warning {
+            background: #2a2a1a;
+        }
+
+        .notification-item .info {
+            flex: 1;
+        }
+
+        .notification-item .info .title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        body.dark-mode .notification-item .info .title {
+            color: #fff;
+        }
+
+        .notification-item .info .desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        body.dark-mode .notification-item .info .desc {
+            color: #666;
+        }
+
+        .notification-item .info .time {
+            font-size: 10px;
+            color: #aaa;
+        }
+
+        body.dark-mode .notification-item .info .time {
+            color: #444;
+        }
+
+        .notification-item .action-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .notification-item .action-btn:hover {
+            color: #e94560;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: #ddd;
+        }
+
+        body.dark-mode .empty-state i {
+            color: #2a2a4e;
+        }
+
+        .empty-state h3 {
+            color: #1a1a2e;
+            margin: 12px 0 6px 0;
+            font-size: 18px;
+        }
+
+        body.dark-mode .empty-state h3 {
+            color: #fff;
+        }
+
+        .empty-state p {
+            color: #888;
+            font-size: 13px;
+        }
+
+        body.dark-mode .empty-state p {
+            color: #666;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        body.dark-mode .bottom-nav {
+            background: #1a1a2e;
+            border-top-color: #2a2a4e;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        body.dark-mode .nav-item {
+            color: #666;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #e94560;
+        }
+
+        .nav-item:hover {
+            color: #e94560;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="location.href='search.html'"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="back-header">
+                <i class="fas fa-arrow-left" onclick="history.back()"></i>
+                <h3>🔔 নোটিফিকেশন</h3>
+                <span class="mark-all" onclick="markAllRead()">সব পড়া হয়েছে</span>
+            </div>
+
+            <div class="notification-list">
+
+                <div class="notification-item unread" onclick="markAsRead(this)">
+                    <div class="icon primary"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="info">
+                        <div class="title">অর্ডার প্লেস হয়েছে!</div>
+                        <div class="desc">আপনার অর্ডার #ORD-2024-001 কনফর্ম হয়েছে।</div>
+                        <div class="time">২ মিনিট আগে</div>
+                    </div>
+                    <button class="action-btn" onclick="event.stopPropagation(); removeNotification(this)"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="notification-item unread" onclick="markAsRead(this)">
+                    <div class="icon success"><i class="fas fa-check-circle"></i></div>
+                    <div class="info">
+                        <div class="title">অর্ডার সম্পন্ন হয়েছে!</div>
+                        <div class="desc">আপনার অর্ডার #ORD-2024-002 সম্পন্ন হয়েছে।</div>
+                        <div class="time">১ ঘন্টা আগে</div>
+                    </div>
+                    <button class="action-btn" onclick="event.stopPropagation(); removeNotification(this)"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="notification-item" onclick="markAsRead(this)">
+                    <div class="icon warning"><i class="fas fa-plus-circle"></i></div>
+                    <div class="info">
+                        <div class="title">ব্যালেন্স অ্যাড হয়েছে!</div>
+                        <div class="desc">আপনার ওয়ালেটে ৳ ৫,০০০ অ্যাড হয়েছে।</div>
+                        <div class="time">৩ ঘন্টা আগে</div>
+                    </div>
+                    <button class="action-btn" onclick="event.stopPropagation(); removeNotification(this)"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="notification-item" onclick="markAsRead(this)">
+                    <div class="icon primary"><i class="fas fa-comment"></i></div>
+                    <div class="info">
+                        <div class="title">নতুন মেসেজ!</div>
+                        <div class="desc">শাহরিয়ার হাসান আপনার সাথে চ্যাট করতে চান।</div>
+                        <div class="time">৫ ঘন্টা আগে</div>
+                    </div>
+                    <button class="action-btn" onclick="event.stopPropagation(); removeNotification(this)"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="notification-item" onclick="markAsRead(this)">
+                    <div class="icon success"><i class="fas fa-star"></i></div>
+                    <div class="info">
+                        <div class="title">নতুন রিভিউ!</div>
+                        <div class="desc">সাদিয়া আক্তার আপনার প্রজেক্টে রিভিউ দিয়েছেন।</div>
+                        <div class="time">১ দিন আগে</div>
+                    </div>
+                    <button class="action-btn" onclick="event.stopPropagation(); removeNotification(this)"><i class="fas fa-times"></i></button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+
+        function markAsRead(element) {
+            element.classList.remove('unread');
+        }
+
+        function markAllRead() {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+            });
+            alert('সব নোটিফিকেশন পড়া হয়েছে!');
+        }
+
+        function removeNotification(element) {
+            const item = element.closest('.notification-item');
+            item.style.transition = '0.3s';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(50px)';
+            setTimeout(() => {
+                item.remove();
+                const remaining = document.querySelectorAll('.notification-item').length;
+                if (remaining === 0) {
+                    document.querySelector('.notification-list').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>কোন নোটিফিকেশন নেই</h3>
+                            <p>আপনার সব নোটিফিকেশন পড়া হয়েছে</p>
+                        </div>
+                    `;
+                }
+            }, 300);
+        }
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>

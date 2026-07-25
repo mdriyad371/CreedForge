@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>সাপোর্ট - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 8px 15px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .top-bar .logo i {
+            font-size: 24px;
+            color: #e94560;
+        }
+
+        .top-bar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .top-bar .logo h2 span {
+            color: #e94560;
+        }
+
+        .top-bar .logo small {
+            font-size: 8px;
+            color: #888;
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .top-bar .right-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .top-bar .right-icons i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .top-bar .right-icons i:hover {
+            color: #e94560;
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 15px 80px 15px;
+            background: #fafafa;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 12px 0;
+        }
+
+        .back-header i {
+            font-size: 20px;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+
+        .back-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .support-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .support-card {
+            background: #fff;
+            padding: 16px 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .support-card:hover {
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .support-card i {
+            font-size: 28px;
+            color: #e94560;
+            margin-bottom: 6px;
+        }
+
+        .support-card h4 {
+            font-size: 13px;
+            color: #1a1a2e;
+        }
+
+        .support-card p {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .faq-section h4 {
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .faq-item {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 6px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+
+        .faq-question span {
+            font-size: 13px;
+            color: #1a1a2e;
+        }
+
+        .faq-question i {
+            color: #888;
+            transition: 0.2s;
+        }
+
+        .faq-answer {
+            padding: 0 14px;
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .faq-answer p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            padding-bottom: 12px;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .ticket-form {
+            background: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-top: 12px;
+        }
+
+        .ticket-form h4 {
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .ticket-form .form-group {
+            margin-bottom: 10px;
+        }
+
+        .ticket-form .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 3px;
+        }
+
+        .ticket-form .form-group input,
+        .ticket-form .form-group select,
+        .ticket-form .form-group textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            background: #fafafa;
+            transition: 0.2s;
+        }
+
+        .ticket-form .form-group input:focus,
+        .ticket-form .form-group select:focus,
+        .ticket-form .form-group textarea:focus {
+            border-color: #e94560;
+            background: #fff;
+        }
+
+        .ticket-form .form-group textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .btn-submit-ticket {
+            width: 100%;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit-ticket:hover {
+            background: #c0392b;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #e94560;
+        }
+
+        .nav-item:hover {
+            color: #e94560;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="alert('সার্চ খোলা হবে')"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="back-header">
+                <i class="fas fa-arrow-left" onclick="history.back()"></i>
+                <h3>🆘 সাপোর্ট</h3>
+            </div>
+
+            <div class="support-options">
+                <div class="support-card" onclick="alert('লাইভ চ্যাট খোলা হবে')">
+                    <i class="fas fa-comment-dots"></i>
+                    <h4>লাইভ চ্যাট</h4>
+                    <p>২৪/৭ সাপোর্ট</p>
+                </div>
+                <div class="support-card" onclick="alert('কল ব্যাক রিকোয়েস্ট')">
+                    <i class="fas fa-phone"></i>
+                    <h4>কল ব্যাক</h4>
+                    <p>আমরা কল করবো</p>
+                </div>
+                <div class="support-card" onclick="alert('ইমেইল: support@projectmarket.com')">
+                    <i class="fas fa-envelope"></i>
+                    <h4>ইমেইল</h4>
+                    <p>support@projectmarket.com</p>
+                </div>
+                <div class="support-card" onclick="alert('হেল্প সেন্টার খোলা হবে')">
+                    <i class="fas fa-book"></i>
+                    <h4>হেল্প সেন্টার</h4>
+                    <p>গাইড & টিউটোরিয়াল</p>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h4>❓ সাধারণ জিজ্ঞাসা</h4>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>কিভাবে অর্ডার করব?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer"><p>প্রজেক্ট ডিটেইল পেজে গিয়ে "অর্ডার করুন" বাটনে ক্লিক করুন। তারপর ফর্ম পূরণ করে কনফর্ম করুন।</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>পেমেন্ট কিভাবে করব?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer"><p>প্রোফাইল → ব্যালেন্স অ্যাড করুন থেকে SSL কমার্জ, বিকাশ, নগদ বা ব্যাংক ট্রান্সফারের মাধ্যমে পেমেন্ট করতে পারেন।</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>অর্ডার ক্যান্সেল করতে পারব?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer"><p>অর্ডার শুরু হওয়ার আগে পর্যন্ত ক্যান্সেল করতে পারবেন। অর্ডার ডিটেইল পেজ থেকে রিকোয়েস্ট করুন।</p></div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">
+                        <span>রিফান্ড পলিসি কি?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer"><p>ডেভেলপার কাজ শেষ করতে ব্যর্থ হলে অথবা মানসম্মত না হলে ১০০% রিফান্ড পাবেন। বিস্তারিত জানতে সাপোর্টে যোগাযোগ করুন।</p></div>
+                </div>
+            </div>
+
+            <div class="ticket-form">
+                <h4>📩 নতুন টিকেট তৈরি করুন</h4>
+                <form onsubmit="submitTicket(event)">
+                    <div class="form-group">
+                        <label>বিষয়</label>
+                        <input type="text" placeholder="কী সমস্যা?" required />
+                    </div>
+                    <div class="form-group">
+                        <label>বিষয়ের ধরন</label>
+                        <select required>
+                            <option value="">পছন্দ করুন</option>
+                            <option value="payment">পেমেন্ট সংক্রান্ত</option>
+                            <option value="order">অর্ডার সংক্রান্ত</option>
+                            <option value="account">অ্যাকাউন্ট সংক্রান্ত</option>
+                            <option value="technical">টেকনিক্যাল সমস্যা</option>
+                            <option value="other">অন্যান্য</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>বিস্তারিত</label>
+                        <textarea placeholder="আপনার সমস্যার বিস্তারিত লিখুন..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit-ticket">
+                        <i class="fas fa-paper-plane"></i> টিকেট সাবমিট করুন
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            element.classList.toggle('active');
+        }
+
+        function submitTicket(e) {
+            e.preventDefault();
+            alert('✅ আপনার টিকেট সফলভাবে সাবমিট হয়েছে!\nআমরা ২৪ ঘন্টার মধ্যে রিপ্লাই দেব।');
+            e.target.reset();
+        }
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>

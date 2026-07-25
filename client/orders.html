@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>অর্ডার হিস্টরি - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 8px 15px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .top-bar .logo i {
+            font-size: 24px;
+            color: #e94560;
+        }
+
+        .top-bar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .top-bar .logo h2 span {
+            color: #e94560;
+        }
+
+        .top-bar .logo small {
+            font-size: 8px;
+            color: #888;
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .top-bar .right-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .top-bar .right-icons i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .top-bar .right-icons i:hover {
+            color: #e94560;
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 15px 80px 15px;
+            background: #fafafa;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 12px 0;
+        }
+
+        .back-header i {
+            font-size: 20px;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+
+        .back-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .order-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .order-tabs::-webkit-scrollbar {
+            height: 0;
+        }
+
+        .tab-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: #e94560;
+            color: #fff;
+            border-color: #e94560;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .order-card:hover {
+            border-color: #e94560;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .order-id {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .order-status {
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-detail {
+            display: flex;
+            gap: 10px;
+        }
+
+        .order-detail img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: #ddd;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-info h4 {
+            font-size: 14px;
+            color: #1a1a2e;
+        }
+
+        .order-info .worker {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .order-info .price {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e94560;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #e94560;
+        }
+
+        .nav-item:hover {
+            color: #e94560;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="alert('সার্চ খোলা হবে')"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="back-header">
+                <i class="fas fa-arrow-left" onclick="history.back()"></i>
+                <h3>📦 আমার অর্ডার</h3>
+            </div>
+
+            <div class="order-tabs">
+                <span class="tab-btn active">সব</span>
+                <span class="tab-btn">পেন্ডিং</span>
+                <span class="tab-btn">প্রগ্রেস</span>
+                <span class="tab-btn">কমপ্লিটেড</span>
+                <span class="tab-btn">ক্যান্সেল</span>
+            </div>
+
+            <div class="order-list">
+
+                <div class="order-card" onclick="alert('অর্ডার ডিটেইল খোলা হবে')">
+                    <div class="order-header">
+                        <span class="order-id">#ORD-2024-001</span>
+                        <span class="order-status status-progress">🔄 ইন-প্রগ্রেস</span>
+                    </div>
+                    <div class="order-detail">
+                        <img src="https://via.placeholder.com/50" alt="Project" />
+                        <div class="order-info">
+                            <h4>পূর্ণাঙ্গ ই-কমার্স সাইট</h4>
+                            <div class="worker">ডেভেলপার: শাহরিয়ার হাসান</div>
+                            <span class="price">৳ ১৫,০০০</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-card" onclick="alert('অর্ডার ডিটেইল খোলা হবে')">
+                    <div class="order-header">
+                        <span class="order-id">#ORD-2024-002</span>
+                        <span class="order-status status-completed">✅ সম্পন্ন</span>
+                    </div>
+                    <div class="order-detail">
+                        <img src="https://via.placeholder.com/50" alt="Project" />
+                        <div class="order-info">
+                            <h4>পেশাদার পোর্টফোলিও</h4>
+                            <div class="worker">ডেভেলপার: সাদিয়া আক্তার</div>
+                            <span class="price">৳ ৮,৫০০</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-card" onclick="alert('অর্ডার ডিটেইল খোলা হবে')">
+                    <div class="order-header">
+                        <span class="order-id">#ORD-2024-003</span>
+                        <span class="order-status status-pending">⏳ পেন্ডিং</span>
+                    </div>
+                    <div class="order-detail">
+                        <img src="https://via.placeholder.com/50" alt="Project" />
+                        <div class="order-info">
+                            <h4>অ্যাডমিন ড্যাশবোর্ড</h4>
+                            <div class="worker">ডেভেলপার: মেহেদী হাসান</div>
+                            <span class="price">৳ ১৮,০০০</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>

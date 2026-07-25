@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ওয়ার্কার প্রোফাইল - ProjectMarket</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 390px;
+            height: 780px;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px 8px 15px;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .top-bar .logo i {
+            font-size: 24px;
+            color: #e94560;
+        }
+
+        .top-bar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .top-bar .logo h2 span {
+            color: #e94560;
+        }
+
+        .top-bar .logo small {
+            font-size: 8px;
+            color: #888;
+            font-weight: 400;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .top-bar .right-icons {
+            display: flex;
+            gap: 14px;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .top-bar .right-icons i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .top-bar .right-icons i:hover {
+            color: #e94560;
+        }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 15px 80px 15px;
+            background: #fafafa;
+        }
+
+        .page-content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .back-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0 12px 0;
+        }
+
+        .back-header i {
+            font-size: 20px;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+
+        .back-header h3 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #eee;
+        }
+
+        .profile-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #e94560;
+        }
+
+        .profile-header h2 {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #1a1a2e;
+        }
+
+        .profile-header .title {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .profile-header .rating {
+            color: #f39c12;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #eee;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e94560;
+        }
+
+        .stat-item .label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            color: #1a1a2e;
+            margin: 12px 0 8px 0;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .skill-tag {
+            background: #eef2f7;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #1a1a2e;
+        }
+
+        .bio {
+            background: #fff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 12px;
+        }
+
+        .bio p {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .demo-project-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .demo-project-card:hover {
+            border-color: #e94560;
+        }
+
+        .demo-project-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .demo-project-card .info {
+            padding: 10px 12px;
+        }
+
+        .demo-project-card .info h4 {
+            color: #1a1a2e;
+            font-size: 14px;
+        }
+
+        .demo-project-card .info p {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .btn-hire {
+            width: 100%;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-hire:hover {
+            background: #c0392b;
+        }
+
+        .btn-chat {
+            width: 100%;
+            background: #2d3436;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-chat:hover {
+            background: #1a1a2e;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px 0;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #e94560;
+        }
+
+        .nav-item:hover {
+            color: #e94560;
+        }
+
+        @media (max-width: 420px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="top-bar">
+            <a href="index.html" class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <div>
+                    <h2>Project<span>Market</span></h2>
+                    <small>ফ্রিল্যান্স মার্কেটপ্লেস</small>
+                </div>
+            </a>
+            <div class="right-icons">
+                <i class="fas fa-search" onclick="alert('সার্চ খোলা হবে')"></i>
+                <i class="fas fa-user" onclick="navigateToProfile()"></i>
+            </div>
+        </div>
+
+        <div class="page-content">
+
+            <div class="back-header">
+                <i class="fas fa-arrow-left" onclick="history.back()"></i>
+                <h3>👷 ওয়ার্কার প্রোফাইল</h3>
+            </div>
+
+            <div class="profile-header">
+                <img src="https://via.placeholder.com/90" alt="Worker" />
+                <h2>শাহরিয়ার হাসান</h2>
+                <div class="title">Senior Full-Stack Developer</div>
+                <div class="rating">⭐ 4.9 (১২টি রিভিউ)</div>
+                <div style="margin-top:6px; font-size:13px; color:#27ae60;">
+                    <i class="fas fa-circle"></i> অনলাইন
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="number">৩৪</div>
+                    <div class="label">📦 সম্পূর্ণ প্রজেক্ট</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">১৫</div>
+                    <div class="label">🎨 ডেমো প্রজেক্ট</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">৫ বছর</div>
+                    <div class="label">⏳ অভিজ্ঞতা</div>
+                </div>
+            </div>
+
+            <div class="section-title">🛠️ দক্ষতা</div>
+            <div class="skill-tags">
+                <span class="skill-tag">React</span>
+                <span class="skill-tag">Node.js</span>
+                <span class="skill-tag">MongoDB</span>
+                <span class="skill-tag">Express</span>
+                <span class="skill-tag">JavaScript</span>
+                <span class="skill-tag">TypeScript</span>
+            </div>
+
+            <div class="section-title">📝 বায়ো</div>
+            <div class="bio">
+                <p>আমি একজন ফুল-স্ট্যাক ডেভেলপার যার ৫ বছরের অভিজ্ঞতা আছে। React, Node.js এবং MongoDB ব্যবহার করে স্কেলেবল ওয়েব অ্যাপ্লিকেশন তৈরি করতে পারদর্শী।</p>
+            </div>
+
+            <div class="section-title">🎨 ডেমো প্রজেক্টসমূহ</div>
+
+            <div class="demo-project-card" onclick="location.href='project-detail.html'">
+                <img src="https://via.placeholder.com/400x140/4A90D9/ffffff?text=E-commerce+Website" alt="Demo" />
+                <div class="info">
+                    <h4>পূর্ণাঙ্গ ই-কমার্স ওয়েবসাইট</h4>
+                    <p>React, Node.js, MongoDB, Stripe</p>
+                    <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                        <span style="color:#e94560; font-weight:700;">৳ ১৫,০০০</span>
+                        <span style="color:#888; font-size:12px;">⭐ 4.9</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-project-card" onclick="location.href='project-detail.html'">
+                <img src="https://via.placeholder.com/400x140/27AE60/ffffff?text=Food+Delivery+App" alt="Demo" />
+                <div class="info">
+                    <h4>ফুড ডেলিভারি মোবাইল অ্যাপ</h4>
+                    <p>Flutter, Firebase, Node.js</p>
+                    <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                        <span style="color:#e94560; font-weight:700;">৳ ২২,৫০০</span>
+                        <span style="color:#888; font-size:12px;">⭐ 4.8</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-hire" onclick="checkAuthAndRedirect('order-form.html')">
+                <i class="fas fa-shopping-cart"></i> হায়ার করুন
+            </button>
+            <button class="btn-chat" onclick="checkAuthAndRedirect('chat.html')">
+                <i class="fas fa-comment"></i> মেসেজ পাঠান
+            </button>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </a>
+            <a href="category.html" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>ক্যাটাগরি</span>
+            </a>
+            <a href="workers.html" class="nav-item active">
+                <i class="fas fa-users"></i>
+                <span>ওয়ার্কার</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function checkAuthAndRedirect(page) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                alert('এই কাজটি করতে লগইন করা প্রয়োজন!');
+                localStorage.setItem('redirectAfterLogin', page);
+                window.location.href = 'login.html';
+            } else {
+                window.location.href = page;
+            }
+        }
+
+        function navigateToProfile() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+</body>
+</html>
